@@ -1,0 +1,38 @@
+.card-profile{
+    width: 300px;
+}
+.title-profile{
+    cursor: pointer;
+  transition: all 0.3s ease;
+
+    &:hover {
+        color: #1890ff; // Màu chữ khi hover
+        cursor: pointer;
+      }
+}
+.button-connect {
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+
+  /* Hover effect */
+  &:hover {
+    color: #007bff; /* Đổi màu chữ */
+    border-color: #007bff;
+    cursor: pointer;
+
+    i {
+      color: #007bff; /* Màu icon khi hover */
+    }
+  }
+
+  i {
+    transition: color 0.3s ease; /* Animation cho icon */
+    margin-right: 8px;
+  }
+}
+.img-profile{
+    cursor: pointer;
+}

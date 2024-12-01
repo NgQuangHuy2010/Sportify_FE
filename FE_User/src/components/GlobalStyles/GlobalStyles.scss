@@ -1,0 +1,154 @@
+@import "normalize.css";
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+
+:root {
+  --white: #fff;
+  --primary: #fe2c55;
+  --default-layout-header-height: 60px;
+  --default-layout-width: 100%;
+  --default-layout-horizontal-spacer: 60px;
+  --text-size13: 15px;
+  --black: #000;
+  --text-color: #333;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
+}
+body {
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  line-height: 1.5;
+  overflow-y: overlay;
+}
+//scrollbar
+html *::-webkit-scrollbar {
+  border-radius: 0;
+  width: 8px;
+}
+
+html *::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(22, 24, 35, 0.2);
+}
+
+html *::-webkit-scrollbar-track {
+  border-radius: 0;
+  background-color: rgba(0, 0, 0, 0);
+}
+//end scrollbar
+button,
+input,
+[tabindex] {
+  outline: none;
+  border: none;
+}
+a {
+  color: var(--text-color);
+  text-decoration: none;
+}
+//custome tippy tooltip
+body {
+  .tippy-box {
+    border-radius: 8px;
+    font-weight: 400;
+  }
+}
+
+///chat
+.cs-conversation__name {
+  font-size: 1.6rem !important;
+}
+.cs-conversation__info {
+  font-size: 1.4rem !important;
+}
+.cs-search__input {
+  font-size: 1.4rem !important;
+}
+.cs-conversation-header__content .cs-conversation-header__user-name {
+  font-size: 1.6rem !important;
+}
+
+.cs-message__html-content {
+  font-size: 1.4rem !important;
+}
+
+.cs-message-input__tools .cs-button {
+  font-size: 1.6rem !important;
+}
+.cs-message-separator {
+  font-size: 1.4rem !important;
+}
+// màu nền tin nhắn
+.cs-message-list {
+  background-color: #f7f7f7;
+}
+//màu nền khi đối phương đang nhập
+.cs-message-list .cs-typing-indicator {
+  background-color: transparent;
+}
+//ô input nhập
+.cs-message-input__content-editor-wrapper {
+  background-color: #fff;
+}
+.cs-message-input__content-editor {
+  font-size: 1.6rem !important;
+  background-color: #fff;
+}
+//màu nền thời gian đoạn chat
+.cs-message-separator {
+  background-color: transparent;
+  color: #888888;
+}
+.cs-message-separator::before,
+.cs-message-separator::after {
+  background-color: #888888;
+}
+//config tin nhắn trong đoạn chat
+
+//màu nền tin nhắn người đối phương
+.cs-message--incoming .cs-message__content {
+  background-color: #fff;
+}
+.cs-message.cs-message--incoming.cs-message--first .cs-message__content {
+  background-color: #fff;
+}
+//màu nền tin nhắn người gửi
+.cs-message--outgoing .cs-message__content {
+  background-color: #fff;
+}
+
+//input search
+.cs-search {
+  background-color: #ecf1f5;
+}
+.cs-search__input {
+  background-color: #ecf1f5;
+}
+//header đoạn chat
+.cs-conversation-header {
+  background-color: #ffffff;
+}
+.cs-conversation-header__content .cs-conversation-header__user-name {
+  background-color: #ffffff;
+}
+.cs-conversation-header__content .cs-conversation-header__info {
+  font-size: 1.4rem !important;
+  background-color: #ffffff;
+}
+//button sent tệp đôạn chat
+.svg-inline--fa {
+  color: #0079a8;
+}
+//end chat
+
+
+.css-d7l1ni-option{
+  font-size: 14px !important;
+}

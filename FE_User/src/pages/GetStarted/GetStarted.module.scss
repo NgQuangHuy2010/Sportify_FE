@@ -1,0 +1,87 @@
+/* GetStarted.module.scss */
+
+/* Cột cha */
+.customCol {
+  display: flex;
+  align-items: stretch;
+}
+
+/* Dòng chứa các cột */
+.customRow {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+/* Cột bên trái */
+.customLeftCol {
+  display: flex;
+  flex-direction: column;
+}
+
+.customGCol {
+  flex: 1;
+}
+
+.customImg {
+  max-width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Cột bên phải */
+.customRightCol {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.customRightCol .customGCol {
+  flex: 1;
+}
+/* Base button styles */
+.btn-navigate {
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  background: linear-gradient(
+    135deg,
+    #1c79cf 0%,
+    #2575fc 100%
+  ); /* Gradient effect */
+  border: none;
+  border-radius: 50px; /* Rounded corners */
+  cursor: pointer;
+  transition: all 0.3s ease; /* Smooth transition for hover effects */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+/* Hover effect */
+.btn-navigate:hover {
+  background: linear-gradient(
+    135deg,
+    #2575fc 0%,
+    #11afcb 100%
+  ); /* Reversed gradient */
+  transform: translateY(-4px); /* Slight elevation on hover */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Deeper shadow */
+}
+
+/* Focused state for accessibility */
+.btn-navigate:focus {
+  outline: none; /* Remove default focus outline */
+}
+
+// text giới thệu
+.overlay{
+    padding: 0 120px;
+}
+.text-explore_venues{
+    font-size: 1.5rem;
+}
+.text-find_players_venues{
+font-weight: bold;
+font-size: 28px;
+}

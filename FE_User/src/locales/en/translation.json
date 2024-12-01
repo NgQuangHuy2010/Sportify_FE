@@ -1,0 +1,116 @@
+{
+  "header": {
+    "tippy-message": "Message",
+    "tippy-notifications": "Notifications",
+    "category-user-viewProfile": "View profile",
+    "category-user-settings": "Settings",
+    "category-user-logout": "Logout",
+    "button-login": "Login",
+    "button-register": "Register"
+  },
+
+  "get-started": {
+    "find_players_venues": "FIND PLAYERS & VENUES NEARBY",
+    "explore_venues": "Seamlessly explore sports venues and play with sports enthusiasts just like you!",
+    "button": "Get started"
+  },
+  "chat": {
+    "placeholder-input-chat": "Type message",
+    "placeholder-input-search": "Search"
+  },
+  "form-account": {
+    "title-login": "Login",
+    "emailLabel": "Email address",
+    "email-placeholder": "Enter your email",
+    "passwordLabel": "Password",
+    "password-placeholder": "Enter your password",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "signIn": "Log in",
+    "noAccount": "Don't have an account?",
+    "register": "Register",
+    "or": "OR",
+    "title-register": "Register",
+    "phoneLabel": "Phone",
+    "phonePlaceholder": "Enter your phone",
+    "confirmPasswordLabel": "Confirm Password",
+    "confirmPasswordPlaceholder": "Enter your confirm password",
+    "submit": "Register",
+    "alreadyHaveAccount": "Already have an account?",
+    "login": "Login"
+  },
+  "modal-profile": {
+    "title-modal": "User Profile",
+    "button-save": "Save",
+    "button-cancel": "Cancel",
+    "header-item-infor-personal": "Personal Information",
+    "header-item-infor-connect": "Connect Information",
+    "button-save-cropper-image": "Save",
+    "button-cancel-cropper-image": "Cancel",
+    "button-upload-avatar": "Upload avatar",
+    "label-form-infor-personal-about_me": "About me",
+
+    "label-form-infor-personal-first_name": "First name",
+    "placeholder-form-infor-personal-first_name": "Enter first name",
+
+    "label-form-infor-personal-last_name": "Last name",
+    "placeholder-form-infor-personal-last_name": "Enter last name",
+
+    "label-form-infor-personal-gender": "Gender",
+    "placeholder-form-infor-personal-gender": "Choose gender",
+    "value-form-infor-personal-gender-male": "Male",
+    "value-form-infor-personal-gender-female": "Female",
+    "value-form-infor-personal-gender-other": "Other",
+
+    "label-form-infor-personal-dob": "Date of birth",
+    "placeholder-form-infor-personal-dob": "Choose date of birth",
+
+    "label-form-infor-personal-address": "House number",
+    "placeholder-form-infor-personal-address": "Enter house address",
+    "label-form-infor-personal-city": "City/Province",
+    "placeholder-form-infor-personal-city": "Select city/province",
+    "label-form-infor-personal-district": "District",
+    "placeholder-form-infor-personal-district": "Select district",
+    "label-form-infor-personal-ward": "Ward/Commune",
+    "placeholder-form-infor-personal-ward": "Select ward/commune",
+
+    "visibility-toggle": "Hide/Show connection",
+    "visibility-description": "Hide/Show connection with other users",
+    "gender-selection": "Search by gender",
+    "gender-male": "Male",
+    "gender-female": "Female",
+    "gender-any": "Any",
+    "age-selection": "Select age range",
+    "age-range": "{{min}} - {{max}} years old",
+    "age": "years",
+
+    "label-form-account-password": "Password"
+  },
+  "modal-change-password": {
+    "title": "Change Password",
+    "old-password": "Old Password",
+    "new-password": "New Password",
+    "confirm-password": "Confirm New Password",
+    "old-password-error": "Please enter your old password!",
+    "new-password-error": "Please enter your new password!",
+    "confirm-password-error": "Please confirm your new password!",
+    "password-match-error": "Passwords do not match!"
+  },
+  "schedule-sport": {
+    "select-days": "Available days of the week",
+    "select-placeholder": "Select days",
+    "all-days-checkbox": "All days of the week",
+    "time-range-for": "Time range for {{day}}",
+    "start-time-placeholder": "Select start time",
+    "end-time-placeholder": "Select end time"
+  },
+  "days": {
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday"
+  }
+}

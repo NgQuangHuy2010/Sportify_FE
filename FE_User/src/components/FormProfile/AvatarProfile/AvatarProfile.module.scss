@@ -1,0 +1,72 @@
+.container {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  .add-icon {
+    width: 50px;
+    height: 50px;
+  }
+  input {
+    display: none;
+  }
+
+  .img-container {
+    margin-top: 30px;
+    border-radius: 50%;
+    border: 3px solid rgb(175, 175, 175);
+    img {
+      width: 200px;
+      height: 200px;
+      display: block;
+      border-radius: 50%;
+    }
+  }
+}
+
+.bio-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bio-text {
+  width: 100%;  /* Đảm bảo thẻ chiếm toàn bộ chiều rộng của phần chứa */
+  width: 320px;  /* Giới hạn chiều rộng tối đa */
+  min-height: 100px;  /* Chiều cao tối thiểu */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 13px;
+  line-height: 1.5;
+  background-color: #fff;
+  overflow-y: auto;  /* Cho phép cuộn dọc khi nội dung dài */
+  word-wrap: break-word;  /* Đảm bảo các từ dài không làm bể giao diện */
+  white-space: normal;  /* Cho phép nội dung xuống dòng khi cần */
+  cursor: text;
+  transition: background-color 0.3s ease;
+}
+
+.bio-text.editing {
+  background-color: #f0f8ff;
+}
+
+.edit-icon {
+  cursor: pointer;
+  font-size: 16px;
+  color: #ccc;
+  &:hover {
+    color: #007bff;
+  }
+}
+
+.edit-icon.active {
+  color: #007bff;
+}
+
+footer {
+  margin-top: 100px;
+  a {
+    color: black;
+    text-decoration: none;
+  }
+}

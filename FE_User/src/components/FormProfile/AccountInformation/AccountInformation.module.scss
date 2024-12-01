@@ -1,0 +1,11 @@
+.button-change-password{
+    background-color: #6c757d !important;
+    color: #fff !important;
+    &:hover{
+        background-color: #666768 !important;
+        color: #fff !important;
+    }
+}
+.modal-change-password {
+    width: 400px !important;
+}

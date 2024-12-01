@@ -1,0 +1,112 @@
+{
+  "header": {
+    "tippy-message": "Tin nhắn",
+    "tippy-notifications": "Thông báo",
+    "category-user-viewProfile": "Hồ sơ",
+    "category-user-settings": "Cài đặt",
+    "category-user-logout": "Đăng xuất",
+    "button-login": "Đăng nhập",
+    "button-register": "Đăng ký"
+  },
+  "get-started": {
+    "find_players_venues": "TÌM KIẾM NGƯỜI CHƠI & SÂN BÓNG GẦN BẠN",
+    "explore_venues": "Khám phá các sân thể thao và chơi cùng những người yêu thể thao như bạn!",
+    "button": "Bắt đầu tìm kiếm"
+  },
+  "form-account": {
+    "title-login": "Đăng nhập",
+    "emailLabel": "Email",
+    "email-placeholder": "Nhập email của bạn",
+    "passwordLabel": "Mật khẩu",
+    "password-placeholder": "Nhập mật khẩu của bạn",
+    "rememberMe": "Ghi nhớ tôi",
+    "forgotPassword": "Quên mật khẩu?",
+    "signIn": "Đăng nhập",
+    "noAccount": "Chưa có tài khoản?",
+    "register": "Đăng ký",
+    "or": "HOẶC",
+    "phoneLabel": "Số điện thoại",
+    "phonePlaceholder": "Nhập số điện thoại của bạn",
+    "confirmPasswordLabel": "Xác nhận mật khẩu",
+    "confirmPasswordPlaceholder": "Nhập lại mật khẩu của bạn",
+    "submit": "Đăng ký",
+    "alreadyHaveAccount": "Đã có tài khoản?",
+    "login": "Đăng nhập"
+  },
+  "chat": {
+    "placeholder-input-chat": "Nhập tin nhắn",
+    "placeholder-input-search": "Tìm kiếm"
+  },
+  "modal-profile": {
+    "title-modal": "Hồ sơ",
+    "button-save": "Lưu",
+    "button-cancel": "Hủy",
+    "header-item-infor-personal": "Thông tin cá nhân",
+    "header-item-infor-connect": "Thông tin kết nối",
+    "button-save-cropper-image": "Lưu",
+    "button-cancel-cropper-image": "Hủy",
+    "button-upload-avatar": "Tải lên hình đại diện",
+    "label-form-infor-personal-about_me": "Giới thiệu về tôi",
+
+    "label-form-infor-personal-first_name": "Tên",
+    "placeholder-form-infor-personal-first_name": "Nhập tên",
+
+    "label-form-infor-personal-last_name": "Họ",
+    "placeholder-form-infor-personal-last_name": "Nhập họ",
+    "label-form-infor-personal-gender": "Giới tính",
+    "placeholder-form-infor-personal-gender": "Chọn giới tính",
+    "value-form-infor-personal-gender-male": "Nam",
+    "value-form-infor-personal-gender-female": "Nữ",
+    "value-form-infor-personal-gender-other": "Khác",
+
+    "label-form-infor-personal-dob": "Ngày sinh",
+    "placeholder-form-infor-personal-dob": "Chọn ngày sinh",
+
+    "label-form-infor-personal-address": "Số nhà",
+    "placeholder-form-infor-personal-address": "Nhập địa chỉ nhà",
+    "label-form-infor-personal-city": "Thành phố/Tỉnh",
+    "placeholder-form-infor-personal-city": "Chọn thành phố/tỉnh",
+    "label-form-infor-personal-district": "Quận/Huyện",
+    "placeholder-form-infor-personal-district": "Chọn quận/huyện",
+    "label-form-infor-personal-ward": "Phường/Xã",
+    "placeholder-form-infor-personal-ward": "Chọn phường/xã",
+
+    "visibility-toggle": "Ẩn/Hiện kết nối",
+    "visibility-description": "Ẩn/Hiện kết nối với người dùng khác",
+    "gender-selection": "Tìm theo giới tính",
+    "gender-male": "Nam",
+    "gender-female": "Nữ",
+    "gender-any": "Bất kỳ",
+    "age-selection": "Chọn độ tuổi",
+    "age-range": "{{min}} - {{max}} tuổi",
+    "age": "tuổi",
+    "label-form-account-password": "Mật khẩu"
+  },
+  "modal-change-password": {
+    "title": "Đổi mật khẩu",
+    "old-password": "Mật khẩu cũ",
+    "new-password": "Mật khẩu mới",
+    "confirm-password": "Xác nhận mật khẩu mới",
+    "old-password-error": "Vui lòng nhập mật khẩu cũ!",
+    "new-password-error": "Vui lòng nhập mật khẩu mới!",
+    "confirm-password-error": "Vui lòng xác nhận mật khẩu mới!",
+    "password-match-error": "Mật khẩu xác nhận không khớp!"
+  },
+  "schedule-sport": {
+    "select-days": "Thời gian trong tuần có thể hoạt động",
+    "select-placeholder": "Chọn ngày",
+    "all-days-checkbox": "Tất cả các ngày trong tuần",
+    "time-range-for": "Khung giờ cho {{day}}",
+    "start-time-placeholder": "Chọn giờ bắt đầu",
+    "end-time-placeholder": "Chọn giờ kết thúc"
+  },
+  "days": {
+    "monday": "Thứ 2",
+    "tuesday": "Thứ 3",
+    "wednesday": "Thứ 4",
+    "thursday": "Thứ 5",
+    "friday": "Thứ 6",
+    "saturday": "Thứ 7",
+    "sunday": "Chủ Nhật"
+  }
+}

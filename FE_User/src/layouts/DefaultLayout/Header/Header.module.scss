@@ -1,0 +1,77 @@
+.wrapper {
+  --search-border-radius: 92px;
+  width: 100%;
+  height: var(--default-layout-header-height);
+  box-shadow: 0 1px 1px rgb(0 0 0 / 12%);
+  display: flex;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
+  background-color:#fff;
+}
+.content {
+  height: 100%;
+  padding:0 var( --default-layout-horizontal-spacer) ;
+  width: var(--default-layout-width);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.search-title{
+  padding: 5px 12px;
+  font-size: 1.3rem;
+color: rgba(22,24,35,0.5);;
+}
+/* Ví dụ trong CSS */
+.logo {
+  cursor: pointer;
+  width: 100%;  /* Cha chiếm toàn bộ chiều rộng */
+  max-width: 150px;  /* Tùy chọn: Giới hạn chiều rộng tối đa của logo */  /* Đảm bảo tỷ lệ ảnh không bị méo */
+}
+.logo img {
+  width: 100%;  /* Con chiếm toàn bộ chiều rộng của cha */
+  height: auto;
+}
+
+.action{
+  display: flex;
+  align-items: center;
+}
+.action-btn{
+  font-size: 2rem;
+background-color: transparent;
+padding: 4px 15px 4px 10px;
+cursor: pointer;
+}
+
+//nut 3 cham
+.more-btn{
+  font-size: 2rem;
+margin-left: 28px;
+  background-color: transparent;
+  padding: 4px 20px;
+  cursor: pointer;
+}
+//user avatar
+.user-avatar{
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-left: 10px;
+}
+//language
+.img-flag-language-header{
+  width: 25px;
+  height: 16px;
+  margin-right: 10px;
+}
+.language-header{
+  cursor: pointer;
+  width: 90px;      /* Đặt độ rộng cố định */
+  overflow: hidden;  /* Ẩn phần chữ bị dư */
+  white-space: nowrap; /* Giữ nguyên trên một dòng */
+}
