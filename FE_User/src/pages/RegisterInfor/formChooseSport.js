@@ -16,7 +16,7 @@ const sportsOptions = [
         Bóng đá
       </span>
     ),
-    value: "football",
+    value: 4,
   },
   {
     label: (
@@ -29,7 +29,7 @@ const sportsOptions = [
         Bóng rổ
       </span>
     ),
-    value: "basketball",
+    value: 5,
   },
   {
     label: (
@@ -42,7 +42,7 @@ const sportsOptions = [
         Cầu lông
       </span>
     ),
-    value: "badminton",
+    value: 6,
   },
   {
     label: (
