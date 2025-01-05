@@ -4,6 +4,7 @@ import ChooseSport from "./formChooseSport";
 import RegisterInfoUser from "./formRegisterInfoUser";
 import styles from "./formStepsRegisterUser.module.scss"; // Import file CSS
 import classNames from "classnames/bind"; //npm i classnames
+import { registerProfile } from "~/services/registerProfileService";
 const cx = classNames.bind(styles);
 const RegisterInformation = () => {
   const [current, setCurrent] = useState(0);
@@ -31,11 +32,42 @@ const RegisterInformation = () => {
     setCurrent(current - 1);
   };
 
-  const handleComplete = () => {
-    // Log dữ liệu từ cả 2 form khi hoàn tất
-    console.log("Dữ liệu đăng ký:", formData);
-    message.success("Đăng ký thành công!");
+  const formatDataForApi = () => {
+    const { userInfo, sports } = formData;
+
+    return {
+      firstname: userInfo.firstName || '',
+      lastname: userInfo.lastName || '',
+      email: userInfo.email || 'default@example.com',
+      birthday:userInfo.dob,
+      phone: userInfo.phone || '0000000000',
+      avatar: userInfo.preview || 'avatar_url',
+      bio: userInfo.bio || 'Bio of John',
+      gender: userInfo.gender || 'MALE',
+      sports: sports,
+      address: {
+        no: userInfo.address?.address || '',
+        city: userInfo.address?.city || '',
+        district: userInfo.address?.district || '',
+        ward: userInfo.address?.ward || '',
+      },
+    };
   };
+
+
+  const handleComplete = async () => {
+    const formattedData = formatDataForApi();  // Chuyển dữ liệu sang dạng đúng
+    console.log("Dữ liệu đăng ký:", formattedData);
+  
+    try {
+      const response = await registerProfile(formattedData); // Gửi dữ liệu lên server
+      console.log("Dữ liệu phản hồi từ server:", response);
+      message.success("Đăng ký thành công!");
+    } catch (error) {
+      message.error("Đã có lỗi xảy ra khi đăng ký.");
+    }
+  };
+  
 
   const steps = [
     {

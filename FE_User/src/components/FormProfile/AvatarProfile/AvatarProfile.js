@@ -96,7 +96,7 @@ const CropperModal = ({ src, modalOpen, setModalOpen, setPreview }) => {
 };
 
 // Container
-const AvatarProfile = () => {
+const AvatarProfile = ({ control, onChange }) => {
   // image src
   const [src, setSrc] = useState(null);
 
@@ -114,6 +114,10 @@ const AvatarProfile = () => {
 
   const handleChange = (event) => {
     setBio(event.target.value);
+
+    if (onChange) {
+      onChange({ bio: event.target.value, preview }); // Truyền dữ liệu bio và preview
+    }
   };
   const enableEditing = () => {
     setIsEditing(true);
@@ -145,6 +149,10 @@ const AvatarProfile = () => {
     if (file && file.type.startsWith("image/")) {
       setSrc(URL.createObjectURL(file));
       setModalOpen(true);
+
+      if (onChange) {
+        onChange({ bio, preview: file });
+      }
     } else {
       alert("Vui lòng chọn một tệp hình ảnh!");
       setModalOpen(false);
@@ -165,7 +173,15 @@ const AvatarProfile = () => {
         <CropperModal
           modalOpen={modalOpen}
           src={src}
-          setPreview={setPreview}
+          setPreview={(newPreview) => {
+            setPreview(newPreview);
+  
+            // Gửi preview ra cha khi được crop
+            if (onChange) {
+              onChange({ bio, preview: newPreview });
+            }
+          }}
+          
           setModalOpen={setModalOpen}
         />
         <a href="/" onClick={handleInputClick} className="fs-4">
