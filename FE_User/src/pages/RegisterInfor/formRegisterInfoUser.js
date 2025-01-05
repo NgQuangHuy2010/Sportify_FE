@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Input, Button, Form, Select, DatePicker } from "antd";
 import locale from "antd/es/date-picker/locale/en_US";
@@ -8,6 +8,7 @@ import AddressForm from "~/components/LocationAddress/AddressForm";
 const RegisterInfoUser = ({ initialData, onSubmit, prev }) => {
   const { Option } = Select;
   const { control, handleSubmit } = useForm();
+  const [profileData, setProfileData] = useState({ bio: "", preview: "" });
   const customLocale = {
     ...locale,
     lang: {
@@ -21,16 +22,28 @@ const RegisterInfoUser = ({ initialData, onSubmit, prev }) => {
     today.setHours(0, 0, 0, 0); // Đặt giờ phút giây về 0 để so sánh chính xác
     return current && current >= today;
   };
+  const formatDate = (date) => {
+    if (!date) return null; // Nếu không có giá trị, trả về null
+    const year = date.$y; // Lấy năm từ đối tượng Day.js
+    const month = String(date.$M + 1).padStart(2, "0"); // Tháng bắt đầu từ 0, cần +1 và định dạng 2 chữ số
+    const day = String(date.$D).padStart(2, "0"); // Định dạng ngày thành 2 chữ số
+    return `${year}-${month}-${day}`;
+  };
+  const handleFormSubmit = (formData) => {
+    const formattedData = {
+      ...formData,
+      dob: formData.dob ? formatDate(formData.dob) : null, // Format ngày sinh
+      ...profileData, // Kết hợp dữ liệu từ AvatarProfile
+    };
+    onSubmit(formattedData); // Truyền dữ liệu đầy đủ lên cha
+  };
   return (
     <form
-
-      onSubmit={handleSubmit((data) => {
-        onSubmit(data); // Truyền dữ liệu lên component cha
-      })}
+    onSubmit={handleSubmit(handleFormSubmit)}
     >
       <div className="row">
         <div className="col-6">
-          <AvatarProfile control={control} />
+          <AvatarProfile control={control}  onChange={(data) => setProfileData(data)}/>
         </div>
         <div className="col-6 pt-5">
           <div className="row mb-3">
@@ -78,9 +91,9 @@ const RegisterInfoUser = ({ initialData, onSubmit, prev }) => {
                     wrapperCol={{ span: 24 }}
                   >
                     <Select {...field} placeholder="Chọn giới tính">
-                      <Option value="male">Nam</Option>
-                      <Option value="female">Nữ</Option>
-                      <Option value="other">Khác</Option>
+                      <Option value="MALE">Nam</Option>
+                      <Option value="FEMALE">Nữ</Option>
+                      <Option value="NA">Khác</Option>
                     </Select>
                   </Form.Item>
                 )}
