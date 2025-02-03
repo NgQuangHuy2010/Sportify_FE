@@ -2,7 +2,7 @@ import * as request from "~/utils/httpRequest";
 
 
 export const registerProfile = async (data) => {
-    console.log("data trc khi ửi lên server", data);
+    // console.log("data trc khi gửi lên server", data);
     //đang có vấn đề về gửi sport lên server
     try {
         const formData = new FormData();
@@ -19,8 +19,11 @@ export const registerProfile = async (data) => {
 
         // Môn thể thao (sports) là mảng, kiểm tra nếu có giá trị thì gửi
         if (data.sports && data.sports.length > 0) {
-            formData.append("sports", JSON.stringify(data.sports));
+            data.sports.forEach(sportId => {
+                formData.append("sports[]", sportId); 
+            });
         }
+        
 
         // Địa chỉ, kiểm tra nếu có giá trị thì gửi
         if (data.address) {
@@ -29,13 +32,16 @@ export const registerProfile = async (data) => {
             if (data.address.district) formData.append("address[district]", data.address.district);
             if (data.address.ward) formData.append("address[ward]", data.address.ward);
         }
-
+        // console.log("Dữ liệu gửi lên server:", JSON.stringify(data, null, 2));
+        // formData.forEach((value, key) => {
+        //     console.log(key, value);
+        // });
+        
         // Gửi yêu cầu với formData đã được chuẩn bị
         const res = await request.post("userprofiles/save", formData, {
             headers: { "Content-Type": "application/json" },
         });
-        console.log("res trả về từ api",res);
-        
+        // console.log("res trả về từ api: ", res.data);
         return res.data;
     } catch (error) {
         console.error("Failed to create profile:", error);
