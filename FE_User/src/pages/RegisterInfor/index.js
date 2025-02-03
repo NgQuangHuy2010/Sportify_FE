@@ -5,10 +5,11 @@ import RegisterInfoUser from "./formRegisterInfoUser";
 import styles from "./formStepsRegisterUser.module.scss"; // Import file CSS
 import classNames from "classnames/bind"; //npm i classnames
 import { registerProfile } from "~/services/registerProfileService";
+import { useNavigate } from "react-router-dom";
 const cx = classNames.bind(styles);
 const RegisterInformation = () => {
   const [current, setCurrent] = useState(0);
-
+  const navigate = useNavigate();
   // State lưu trữ dữ liệu từ các bước
   const [formData, setFormData] = useState({
     sports: [],
@@ -38,12 +39,12 @@ const RegisterInformation = () => {
     return {
       firstname: userInfo.firstName || '',
       lastname: userInfo.lastName || '',
-      email: userInfo.email || 'default@example.com',
+      email: userInfo.email || '',
       birthday:userInfo.dob,
-      phone: userInfo.phone || '0000000000',
-      avatar: userInfo.preview || 'avatar_url',
-      bio: userInfo.bio || 'Bio of John',
-      gender: userInfo.gender || 'MALE',
+      phone: userInfo.phone || '',
+      avatar: userInfo.preview || '',
+      bio: userInfo.bio || '',
+      gender: userInfo.gender || '',
       sports: sports,
       address: {
         no: userInfo.address?.address || '',
@@ -63,6 +64,7 @@ const RegisterInformation = () => {
       const response = await registerProfile(formattedData); // Gửi dữ liệu lên server
       console.log("Dữ liệu phản hồi từ server:", response);
       message.success("Đăng ký thành công!");
+      navigate("/home");
     } catch (error) {
       message.error("Đã có lỗi xảy ra khi đăng ký.");
     }

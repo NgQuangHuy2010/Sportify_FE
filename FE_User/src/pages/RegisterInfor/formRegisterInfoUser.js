@@ -7,8 +7,26 @@ import AvatarProfile from "~/components/FormProfile/AvatarProfile/AvatarProfile"
 import AddressForm from "~/components/LocationAddress/AddressForm";
 const RegisterInfoUser = ({ initialData, onSubmit, prev }) => {
   const { Option } = Select;
-  const { control, handleSubmit } = useForm();
+  const { control, handleSubmit,formState: { errors }, } = useForm();
   const [profileData, setProfileData] = useState({ bio: "", preview: "" });
+  const validateRule = ({ required, pattern, minLength, maxLength, message }) => {
+    let rules = {};
+  
+    if (required) {
+      rules.required = message || "Trường này không được để trống";
+    }
+    if (pattern) {
+      rules.pattern = { value: pattern, message: message || "Giá trị không hợp lệ" };
+    }
+    if (minLength) {
+      rules.minLength = { value: minLength, message: message || `Tối thiểu ${minLength} ký tự` };
+    }
+    if (maxLength) {
+      rules.maxLength = { value: maxLength, message: message || `Tối đa ${maxLength} ký tự` };
+    }
+  
+    return rules;
+  };
   const customLocale = {
     ...locale,
     lang: {
@@ -51,9 +69,12 @@ const RegisterInfoUser = ({ initialData, onSubmit, prev }) => {
               <Controller
                 name="lastName"
                 control={control}
+                rules={validateRule({ required: true, message: "Họ không được để trống" })}
                 render={({ field }) => (
                   <Form.Item
                     label="Họ"
+                    validateStatus={errors.lastName ? "error" : ""}
+                    help={errors.lastName?.message}
                     labelCol={{ span: 24 }}
                     wrapperCol={{ span: 24 }}
                   >
@@ -66,9 +87,12 @@ const RegisterInfoUser = ({ initialData, onSubmit, prev }) => {
               <Controller
                 name="firstName"
                 control={control}
+                rules={validateRule({ required: true, message: "Tên không được để trống" })}
                 render={({ field }) => (
                   <Form.Item
                     label="Tên"
+                    validateStatus={errors.firstName ? "error" : ""}
+                    help={errors.firstName?.message}
                     labelCol={{ span: 24 }}
                     wrapperCol={{ span: 24 }}
                   >
@@ -84,11 +108,14 @@ const RegisterInfoUser = ({ initialData, onSubmit, prev }) => {
               <Controller
                 name="gender"
                 control={control}
+                rules={validateRule({ required: true, message: "Vui lòng chọn giới tính" })}
                 render={({ field }) => (
                   <Form.Item
                     label="Giới tính"
                     labelCol={{ span: 24 }}
                     wrapperCol={{ span: 24 }}
+                    validateStatus={errors.gender ? "error" : ""}
+                    help={errors.gender?.message}
                   >
                     <Select {...field} placeholder="Chọn giới tính">
                       <Option value="MALE">Nam</Option>
