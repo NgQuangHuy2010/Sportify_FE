@@ -35,11 +35,19 @@ const RegisterInfoUser = ({ initialData, onSubmit, prev }) => {
     },
   };
   const disabledDate = (current) => {
-    // Không cho phép chọn ngày hôm nay hoặc ngày trong tương lai
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Đặt giờ phút giây về 0 để so sánh chính xác
-    return current && current >= today;
+    today.setHours(0, 0, 0, 0);
+    // Giới hạn độ tuổi từ 15 đến 80 tuổi
+    const minAllowedDate = new Date();
+    minAllowedDate.setFullYear(today.getFullYear() - 80); // Ngày cách đây 80 năm
+  
+    const maxAllowedDate = new Date();
+    maxAllowedDate.setFullYear(today.getFullYear() - 15); // Ngày cách đây 15 năm
+  
+    return current && (current < minAllowedDate || current >= maxAllowedDate);
   };
+  
+  
   const formatDate = (date) => {
     if (!date) return null; // Nếu không có giá trị, trả về null
     const year = date.$y; // Lấy năm từ đối tượng Day.js

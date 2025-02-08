@@ -12,7 +12,7 @@ const sportsOptions = [
           src="https://img.icons8.com/emoji/30/soccer-ball-emoji.png"
           alt="football"
           style={{ marginRight: 8 }}
-        />
+        />  
         Bóng đá
       </span>
     ),

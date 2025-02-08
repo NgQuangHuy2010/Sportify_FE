@@ -9,7 +9,7 @@ const cx = classNames.bind(styles);
 function ConnectionSettings() {
   const { t } = useTranslation();
 
-  const [ageRange, setAgeRange] = useState([18, 99]);
+  const [ageRange, setAgeRange] = useState([15, 80]);
   const onChange = (checked) => {
     //console.log(`Switch state: ${checked}`);
   };
@@ -45,9 +45,9 @@ function ConnectionSettings() {
         </span>
         <Slider
           range
-          min={18}
-          max={99}
-          defaultValue={[18, 99]}
+          min={15}
+          max={80}
+          defaultValue={[15, 80]}
           onChange={onAgeChange}
           tooltip={{ formatter: (value) => `${value} ${t("modal-profile.age")}` }}
         />
