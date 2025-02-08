@@ -110,7 +110,7 @@ const AvatarProfile = ({ control, onChange }) => {
   const inputRef = useRef(null);
   const [isEditing, setIsEditing] = useState(false);
   const contentEditableRef = useRef(null);
-  const [bio, setBio] = useState("Đây là đoạn giới thiệu ban đầu của tôi");
+  const [bio, setBio] = useState("");
 
   const handleChange = (event) => {
     setBio(event.target.value);
