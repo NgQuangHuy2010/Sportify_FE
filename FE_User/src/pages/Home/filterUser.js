@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Select from "react-select";
 
-
 const sportOptions = [
   { value: "bong-da", label: "Bóng đá", color: "#00B8D9" },
   { value: "bong-ro", label: "Bóng rổ", color: "#FF8B00" },
@@ -72,12 +71,8 @@ const FilterUser = () => {
 
         {/* Nút Search */}
         <div className="col-md-1 ">
-          <button
-            type="primary"
-            className="btn btn-primary  py-3  btn-lg"
-            // style={{ paddingLeft: 20, paddingRight: 20 }}
-          >
-            <i className="fa-solid fa-magnifying-glass px-1"></i>
+          <button type="primary" className="btn btn-primary px-4 py-3  btn-lg">
+            <i className="fa-solid fa-magnifying-glass p-1"></i>
             Tìm kiếm
           </button>
         </div>

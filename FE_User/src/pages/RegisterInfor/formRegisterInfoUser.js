@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Input, Button, Form, Select, DatePicker } from "antd";
 import locale from "antd/es/date-picker/locale/en_US";
@@ -7,7 +7,26 @@ import AvatarProfile from "~/components/FormProfile/AvatarProfile/AvatarProfile"
 import AddressForm from "~/components/LocationAddress/AddressForm";
 const RegisterInfoUser = ({ initialData, onSubmit, prev }) => {
   const { Option } = Select;
-  const { control, handleSubmit } = useForm();
+  const { control, handleSubmit,formState: { errors }, } = useForm();
+  const [profileData, setProfileData] = useState({ bio: "", preview: "" });
+  const validateRule = ({ required, pattern, minLength, maxLength, message }) => {
+    let rules = {};
+  
+    if (required) {
+      rules.required = message || "Trường này không được để trống";
+    }
+    if (pattern) {
+      rules.pattern = { value: pattern, message: message || "Giá trị không hợp lệ" };
+    }
+    if (minLength) {
+      rules.minLength = { value: minLength, message: message || `Tối thiểu ${minLength} ký tự` };
+    }
+    if (maxLength) {
+      rules.maxLength = { value: maxLength, message: message || `Tối đa ${maxLength} ký tự` };
+    }
+  
+    return rules;
+  };
   const customLocale = {
     ...locale,
     lang: {
@@ -16,21 +35,41 @@ const RegisterInfoUser = ({ initialData, onSubmit, prev }) => {
     },
   };
   const disabledDate = (current) => {
-    // Không cho phép chọn ngày hôm nay hoặc ngày trong tương lai
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Đặt giờ phút giây về 0 để so sánh chính xác
-    return current && current >= today;
+    today.setHours(0, 0, 0, 0);
+    // Giới hạn độ tuổi từ 15 đến 80 tuổi
+    const minAllowedDate = new Date();
+    minAllowedDate.setFullYear(today.getFullYear() - 80); // Ngày cách đây 80 năm
+  
+    const maxAllowedDate = new Date();
+    maxAllowedDate.setFullYear(today.getFullYear() - 15); // Ngày cách đây 15 năm
+  
+    return current && (current < minAllowedDate || current >= maxAllowedDate);
+  };
+  
+  
+  const formatDate = (date) => {
+    if (!date) return null; // Nếu không có giá trị, trả về null
+    const year = date.$y; // Lấy năm từ đối tượng Day.js
+    const month = String(date.$M + 1).padStart(2, "0"); // Tháng bắt đầu từ 0, cần +1 và định dạng 2 chữ số
+    const day = String(date.$D).padStart(2, "0"); // Định dạng ngày thành 2 chữ số
+    return `${year}-${month}-${day}`;
+  };
+  const handleFormSubmit = (formData) => {
+    const formattedData = {
+      ...formData,
+      dob: formData.dob ? formatDate(formData.dob) : null, // Format ngày sinh
+      ...profileData, // Kết hợp dữ liệu từ AvatarProfile
+    };
+    onSubmit(formattedData); // Truyền dữ liệu đầy đủ lên cha
   };
   return (
     <form
-
-      onSubmit={handleSubmit((data) => {
-        onSubmit(data); // Truyền dữ liệu lên component cha
-      })}
+    onSubmit={handleSubmit(handleFormSubmit)}
     >
       <div className="row">
         <div className="col-6">
-          <AvatarProfile control={control} />
+          <AvatarProfile control={control}  onChange={(data) => setProfileData(data)}/>
         </div>
         <div className="col-6 pt-5">
           <div className="row mb-3">
@@ -38,9 +77,12 @@ const RegisterInfoUser = ({ initialData, onSubmit, prev }) => {
               <Controller
                 name="lastName"
                 control={control}
+                rules={validateRule({ required: true, message: "Họ không được để trống" })}
                 render={({ field }) => (
                   <Form.Item
                     label="Họ"
+                    validateStatus={errors.lastName ? "error" : ""}
+                    help={errors.lastName?.message}
                     labelCol={{ span: 24 }}
                     wrapperCol={{ span: 24 }}
                   >
@@ -53,9 +95,12 @@ const RegisterInfoUser = ({ initialData, onSubmit, prev }) => {
               <Controller
                 name="firstName"
                 control={control}
+                rules={validateRule({ required: true, message: "Tên không được để trống" })}
                 render={({ field }) => (
                   <Form.Item
                     label="Tên"
+                    validateStatus={errors.firstName ? "error" : ""}
+                    help={errors.firstName?.message}
                     labelCol={{ span: 24 }}
                     wrapperCol={{ span: 24 }}
                   >
@@ -71,16 +116,19 @@ const RegisterInfoUser = ({ initialData, onSubmit, prev }) => {
               <Controller
                 name="gender"
                 control={control}
+                rules={validateRule({ required: true, message: "Vui lòng chọn giới tính" })}
                 render={({ field }) => (
                   <Form.Item
                     label="Giới tính"
                     labelCol={{ span: 24 }}
                     wrapperCol={{ span: 24 }}
+                    validateStatus={errors.gender ? "error" : ""}
+                    help={errors.gender?.message}
                   >
                     <Select {...field} placeholder="Chọn giới tính">
-                      <Option value="male">Nam</Option>
-                      <Option value="female">Nữ</Option>
-                      <Option value="other">Khác</Option>
+                      <Option value="MALE">Nam</Option>
+                      <Option value="FEMALE">Nữ</Option>
+                      <Option value="NA">Khác</Option>
                     </Select>
                   </Form.Item>
                 )}
