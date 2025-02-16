@@ -8,5 +8,7 @@ const routes = {
   profile: "/:nickname",
   search: "/search",
   message: "/message",
+  allVenues:"/venues",
+  detailsVenues:"/detail-venues"
 };
 export default routes;
