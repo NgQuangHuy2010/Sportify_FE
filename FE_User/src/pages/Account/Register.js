@@ -53,16 +53,6 @@ const Register = () => {
               placeholder={t("form-account.email-placeholder")}
             />
           </Form.Item>
-          {/* Phone Input */}
-          <Form.Item
-            label={t("form-account.phoneLabel")}
-            name="phone"
-          >
-            <Input
-              size="large"
-              placeholder={t("form-account.phonePlaceholder")}
-            />
-          </Form.Item>
           {/* Password Input */}
           <Form.Item
             label={t("form-account.passwordLabel")}

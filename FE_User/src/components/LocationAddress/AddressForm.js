@@ -1,5 +1,5 @@
 import React, { useEffect, useState,forwardRef  } from "react";
-import { Select, Form, Input } from "antd";
+import { Select, Form } from "antd";
 import locations from "./locations.json"; // Import dữ liệu từ file JSON
 import { useTranslation } from "react-i18next";
 const { Option } = Select;
@@ -46,7 +46,7 @@ const AddressForm = forwardRef(({ value, onChange }, ref) => {
 
   return (
     <div className="row">
-    <div className="col-12">
+    {/* <div className="col-12">
       <Form.Item
         labelCol={{ span: 24 }}
         wrapperCol={{ span: 24 }}
@@ -61,7 +61,7 @@ const AddressForm = forwardRef(({ value, onChange }, ref) => {
           placeholder={t("modal-profile.placeholder-form-infor-personal-address")}
         />
       </Form.Item>
-    </div>
+    </div> */}
 
     {/* Thành phố/Tỉnh */}
     <div className="col-4">

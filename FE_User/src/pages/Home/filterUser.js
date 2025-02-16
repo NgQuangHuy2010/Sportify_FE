@@ -75,9 +75,9 @@ const FilterUser = () => {
           <button
             type="primary"
             className="btn btn-primary  py-3  btn-lg"
-            style={{ paddingLeft: 20, paddingRight: 20 }}
+            // style={{ paddingLeft: 20, paddingRight: 20 }}
           >
-            <i className="fa-solid fa-magnifying-glass"></i>
+            <i className="fa-solid fa-magnifying-glass px-1"></i>
             Tìm kiếm
           </button>
         </div>

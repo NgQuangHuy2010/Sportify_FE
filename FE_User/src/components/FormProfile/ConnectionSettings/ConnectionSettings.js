@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Switch, Form, Radio, Slider } from "antd";
 import { useTranslation } from "react-i18next";
-import classNames from "classnames/bind";
-import styles from "./ConnectionSettings.module.scss";
+// import classNames from "classnames/bind";
+// import styles from "./ConnectionSettings.module.scss";
 import ScheduleSport from "./ScheduleSport";
-const cx = classNames.bind(styles);
+// const cx = classNames.bind(styles);
 
 function ConnectionSettings() {
   const { t } = useTranslation();
