@@ -2,11 +2,9 @@ import React from "react";
 import dayjs from "dayjs";
 import { Modal, TimePicker, Form, DatePicker, Select, Button } from "antd";
 import { useForm, Controller } from "react-hook-form";
-const format = "HH:mm";
 const BookingModal = ({ visible, onClose }) => {
-    const { control, handleSubmit, reset , watch, setError} = useForm();
-    const startTime = watch("startTime");
-    const endTime = watch("endTime");
+    const { control, handleSubmit, reset , setError} = useForm();
+
     const onSubmit = (data) => {
         // Kiểm tra nếu endTime trước startTime thì báo lỗi
         if (dayjs(data.endTime).isBefore(dayjs(data.startTime))) {
