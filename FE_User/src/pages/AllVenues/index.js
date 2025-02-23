@@ -1,22 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Row, Col } from "antd";
 import styles from "./allVenues.module.scss";
 import classNames from "classnames/bind";
 import { Input, Select, Checkbox, Button } from "antd";
 import { useNavigate } from "react-router-dom";
-import config from "~/config";
-
+import { getAllVenues } from "~/services/venues";
 const cx = classNames.bind(styles);
 const { Meta } = Card;
 const { Search } = Input;
-const data = Array.from({ length: 6 }, (_, index) => ({
-  id: index + 1,
-  title: `Card title ${index + 1}`,
-  description: `This is the description for card ${index + 1}`,
-  sport: "https://img.icons8.com/emoji/48/soccer-ball-emoji.png",
-  image:
-    "https://playo.gumlet.io/BTSTURFCLUB20240531052641675463/BTSTurfClub1717174005529.jpg?mode=crop&crop=smart&h=200&width=450&q=40&format=webp",
-}));
+
+
+
+
 const sports = [
   { value: "bong-da", label: "Bóng đá" },
   { value: "bong-ro", label: "Bóng rổ" },
@@ -27,7 +22,22 @@ const sports = [
 const onSearch = (value, _e, info) => console.log(info?.source, value);
 function AllVenues() {
   const [selectedSports, setSelectedSports] = useState([]);
+  const [data, setData] = useState([]);
   const navigate = useNavigate();
+  const defaultImage = "https://playo.gumlet.io/BTSTURFCLUB20240531052641675463/BTSTurfClub1717174005529.jpg?mode=crop&crop=smart&h=200&width=450&q=40&format=webp";
+  const iconSport ="https://img.icons8.com/emoji/48/soccer-ball-emoji.png";
+  useEffect(() => {
+    const fetchVenues = async () => {
+      const res = await getAllVenues();
+      if (res) {
+        setData(res);
+      }
+    };
+    fetchVenues();
+  }, []);
+  const handleClickVenue = (item) => {
+    navigate(`/detail-venues/${item.id}`, { state: { venue: item } });
+  };
   const handleChangeSport = (value) => {
     setSelectedSports(value);
   };
@@ -39,12 +49,12 @@ function AllVenues() {
       <div className="d-flex justify-content-between p-4">
         <div>
           <h2 className="fw-bold">
-            All Venues in Bangalore: Discover and Book Nearby Venues
+           Tất cả sân 
           </h2>
         </div>
         <div>
           <Search
-            placeholder="Search by venue name"
+            placeholder="Tìm kiếm tên sân"
             className="mx-4"
             onSearch={onSearch}
             enterButton
@@ -94,13 +104,13 @@ function AllVenues() {
               className="d-flex justify-content-center"
             >
               <Card
-                onClick={() => navigate(config.routes.detailsVenues)}
+                onClick={() => handleClickVenue(item)}
                 className={cx("card-profile")}
                 hoverable
                 cover={
                   <img
                     alt={item.title}
-                    src={item.image}
+                    src={item.image || defaultImage}
                     className={cx("img-profile")}
                   />
                 }
@@ -108,21 +118,14 @@ function AllVenues() {
                 <Meta
                   title={
                     <div className="">
-                      <span className={cx("title-profile")}>{item.title}</span>
+                      <span className={cx("title-profile")}>{item.name}</span>
                     </div>
                   }
                   description={item.description}
-                  sport={
-                    <img
-                      src={item.sport}
-                      alt="sport icon"
-                      style={{ width: 24, height: 24, marginRight: 8 }}
-                    />
-                  }
                 />
                 <div className="d-flex justify-content-start mt-4">
                   <img
-                    src={item.sport}
+                    src={item.sport || iconSport}
                     alt="sport icon"
                     style={{ width: 24, height: 24 }}
                   />

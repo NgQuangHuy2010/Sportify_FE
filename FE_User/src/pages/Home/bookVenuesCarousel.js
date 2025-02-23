@@ -12,48 +12,48 @@ import { useNavigate } from "react-router-dom";
 
 const items = [
   {
-    title: "Venue 1",
+    title: "Sân bóng Anh Tú",
     text: "A beautiful event space for weddings and parties.",
     image:
       "https://playo.gumlet.io/BTSTURFCLUB20240531052641675463/BTSTurfClub1717174005529.jpg?mode=crop&crop=smart&h=200&width=450&q=40&format=webp",
   },
   {
-    title: "Venue 2",
+    title: "Sân bóng Anh Huy",
     text: "Modern and stylish location for corporate events.",
     image:
-      "https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png",
+      "https://playo.gumlet.io/DDSASTJOSEPHSBOYSHIGHSCHOOLEUROPEANS20220919091705834667/DDSAStJosephsEuropeanBoysHighSchool1713331050831.jpg?mode=crop&crop=smart&h=200&width=450&q=75",
   },
   {
-    title: "Venue 3",
+    title: "Sân bóng Vì Tương Lai ",
     text: "A scenic outdoor venue with breathtaking views.",
     image:
-      "https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png",
+      "https://playo.gumlet.io/VPLAYSPORTS/FusionTheTurf1642605177649.jpg?mode=crop&crop=smart&h=200&width=450&q=75",
   },
   {
-    title: "Venue 4",
+    title: "Sân bóng Cây Da",
     text: "Luxury ballroom with premium amenities.",
     image:
       "https://playo.gumlet.io/DEPOT18SPORTS20250202081042972914/Depot18Sports1738672619162.jpg?mode=crop&crop=smart&h=200&width=450&q=40&format=webp",
   },
   {
-    title: "Venue 5",
+    title: "Sân vận động Dĩ An",
     text: "A perfect spot for private parties and gatherings.",
-    image: "https://source.unsplash.com/300x200/?party,venue",
+    image: "https://playo.gumlet.io/IMPETUSBANGALOREFOOTBALLSTADIUM/BangaloreFootballStadiumImpetusSports12.jpg?mode=crop&crop=smart&h=200&width=450&q=75",
   },
   {
     title: "Venue 6",
     text: "An elegant banquet hall for any celebration.",
-    image: "https://source.unsplash.com/300x200/?banquet,hall",
+    image: "https://playo.gumlet.io/BEFITBADMINTONCOURT/SkyArena1663676951821.jpeg?mode=crop&crop=smart&h=200&width=450&q=75",
   },
   {
     title: "Venue 7",
     text: "A perfect spot for private parties and gatherings.",
-    image: "https://source.unsplash.com/300x200/?party,venue",
+    image: "https://playo.gumlet.io/16FEATHERBADMINTONACADEMY20221227122415918727/16FeatherBadmintonAcademy1672143979291.jpeg?mode=crop&crop=smart&h=200&width=450&q=75",
   },
   {
     title: "Venue 8",
     text: "An elegant banquet hall for any celebration.",
-    image: "https://source.unsplash.com/300x200/?banquet,hall",
+    image: "https://playo.gumlet.io/GAMEONTERRACEFOOTBALLANDCRICKET/ChathurbhujaBadmintonAcademy1681290569631.jpeg?mode=crop&crop=smart&h=200&width=450&q=75",
   },
 ];
 

@@ -20,15 +20,9 @@ const Register = () => {
 
   const validateEmail = async (email) => {
     if (!email) return "Vui lòng nhập email";
-  
-    console.log("🔵 Đang kiểm tra email:", email);
     setEmailChecking(true);
-  
     const isExist = await checkEmailExists(email);
-  
     setEmailChecking(false);
-    console.log("🟢 Kết quả kiểm tra email:", isExist);
-  
     if (isExist) return "Email đã tồn tại, vui lòng nhập email khác";
     return true;
   };
@@ -58,8 +52,12 @@ const Register = () => {
   };
 
   const onSubmit = (data) => {
-    console.log("Dữ liệu đăng ký:", data);
-    message.success("Đăng ký thành công!");
+    // console.log("Dữ liệu đăng ký:", data);
+    const userData = {
+      email: data.email,
+      password: data.password,
+    };
+    navigate("/register-infomation", { state: { userData} });
   };
 
   return (
