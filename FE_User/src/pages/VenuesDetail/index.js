@@ -1,15 +1,18 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Button } from "antd";
 import BookingModal from "./booking";
 
 function VenuesDetails() {
+  const location = useLocation();
+  const venue = location.state?.venue;
   const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <>
       <div className="container">
         <div className="row">
           <div className="col-6">
-            <h1 className="fw-bold my-5">Depot18 - Sports</h1>
+            <h1 className="fw-bold my-5">{venue.name}</h1>
             <img
               alt="hâha"
               src="https://playo.gumlet.io/DEPOT18SPORTS20250202081042972914/Depot18Sports1738672756586.jpg?w=700&format=webp&q=30&overlay=https://playo-website.gumlet.io/playo-website-v2/logos-icons/playo-logo.png&overlay_width_pct=0.2&overlay_height_pct=1&overlay_position=bottomright"
@@ -22,6 +25,7 @@ function VenuesDetails() {
             <BookingModal
               visible={isModalOpen}
               onClose={() => setIsModalOpen(false)}
+              venue={venue}
             />
             <Button
               type="primary"
@@ -29,7 +33,7 @@ function VenuesDetails() {
               style={{ height: "max-content" }}
               onClick={() => setIsModalOpen(true)}
             >
-              Book Now
+             Đặt ngay
             </Button>
             <div
               style={{
@@ -45,17 +49,17 @@ function VenuesDetails() {
               <h2
                 style={{
                   fontWeight: "600",
-                  fontSize: "1.5rem",
+                  fontSize: "1.6rem",
                   marginBottom: "8px",
                 }}
               >
-                Timing
+                Thời gian mở cửa
               </h2>
               <div
                 style={{
                   marginTop: "8px",
                   lineHeight: "1",
-                  fontSize: "1.3rem",
+                  fontSize: "1.4rem",
                 }}
               >
                 5:00 AM - 12:00 AM
@@ -75,21 +79,20 @@ function VenuesDetails() {
               <h2
                 style={{
                   fontWeight: "600",
-                  fontSize: "1.5rem",
+                  fontSize: "1.6rem",
                   marginBottom: "8px",
                 }}
               >
-                Location
+                Địa điểm
               </h2>
               <p
                 style={{
                   marginTop: "8px",
                   lineHeight: "1",
-                  fontSize: "1.3rem",
+                  fontSize: "1.4rem",
                 }}
               >
-                Chamundi Hotel Compound, Jayamahal Main Rd, opposite Jayamahal
-                Palace, Jayamahal, Bengaluru, Karnataka - 560006
+                {venue.location}
               </p>
               <iframe
                 title="kk"

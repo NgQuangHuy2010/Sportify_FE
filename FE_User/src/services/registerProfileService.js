@@ -2,7 +2,7 @@ import * as request from "~/utils/httpRequest";
 
 
 export const registerProfile = async (data) => {
-    // console.log("data trc khi gửi lên server", data);
+     console.log("data trc khi gửi lên server", data);
     //đang có vấn đề về gửi sport lên server
     try {
         const formData = new FormData();
@@ -10,7 +10,8 @@ export const registerProfile = async (data) => {
         // Kiểm tra và chỉ append những trường có giá trị
         if (data.firstname) formData.append("firstname", data.firstname);
         if (data.lastname) formData.append("lastname", data.lastname);
-        if (data.email) formData.append("email", data.email);
+        if (data.email) formData.append("email", data.email); 
+        if (data.password) formData.append("password", data.password); 
         if (data.birthday) formData.append("birthday", data.birthday);
         if (data.phone) formData.append("phone", data.phone);
         if (data.avatar) formData.append("avatar", data.avatar);  

@@ -9,6 +9,6 @@ const routes = {
   search: "/search",
   message: "/message",
   allVenues:"/venues",
-  detailsVenues:"/detail-venues"
+  detailsVenues:"/detail-venues/:id"
 };
 export default routes;

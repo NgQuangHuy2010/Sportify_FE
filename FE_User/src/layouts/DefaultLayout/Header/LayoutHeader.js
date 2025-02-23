@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -48,7 +48,7 @@ const MENU_ITEM = [
   // },
 ];
 function Header() {
-  const currentUser = true;
+  const [isRegistered, setIsRegistered] = useState(false);
   const navigate = useNavigate();
   const { i18n, t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -71,7 +71,13 @@ function Header() {
     closeModal();
   };
   //end modal profile
-
+  useEffect(() => {
+    // Kiểm tra giá trị isRegistered trong localStorage
+    const registeredStatus = localStorage.getItem("isRegistered");
+    if (registeredStatus === "true") {
+      setIsRegistered(true); // Nếu đã đăng ký, đặt isRegistered = true
+    }
+  }, []);
   const userMenu = [
     {
       icon: <i className="fa-solid fa-user"></i>,
@@ -92,7 +98,7 @@ function Header() {
     },
   ];
   const handleLogoClick = () => {
-    if (currentUser) {
+    if (isRegistered) {
       navigate(config.routes.home); // Điều hướng đến trang /home nếu có currentUser
     } else {
       navigate("/"); // Điều hướng đến trang hiện tại nếu không có currentUser
@@ -137,7 +143,7 @@ function Header() {
           </div>
 
           <div className={cx("action")}>
-            {currentUser ? (
+            {isRegistered ? (
               <>
                 <Tippy content={t("header.tippy-message")} placement="bottom">
                   <button
@@ -157,7 +163,7 @@ function Header() {
                 </Tippy>
                 <Menu
                   key={i18n.language}
-                  items={currentUser ? userMenu : MENU_ITEM}
+                  items={isRegistered ? userMenu : MENU_ITEM}
                 >
                   <img
                     src={require("~/components/Chat/images/ram.png")}
