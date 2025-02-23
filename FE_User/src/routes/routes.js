@@ -8,6 +8,8 @@ import Following from "~/pages/Following";
 import Profile from "~/pages/Profile";
 import Search from "~/components/Search/Search";
 import Message from "~/pages/Message";
+import AllVenues from "~/pages/AllVenues";
+import DetailsVenues from "~/pages/VenuesDetail";
 import DefaultLayout from "~/layouts/DefaultLayout/DefaultLayout";
 const publicRoutes = [
   { path: config.routes.getstarted, component: GetStarted,layout: DefaultLayout,},
@@ -19,6 +21,8 @@ const publicRoutes = [
   { path: config.routes.profile, component: Profile }, //ko can @ van tu match
   { path: config.routes.search, component: Search, layout: null },
   { path: config.routes.message, component: Message, layout: DefaultLayout },
+  { path: config.routes.allVenues, component: AllVenues, layout: DefaultLayout },
+  { path: config.routes.detailsVenues, component: DetailsVenues, layout: DefaultLayout },
 ];
 const privateRoutes = [
   // router privateRoutes này có thể dùng để ko login ko coi dc

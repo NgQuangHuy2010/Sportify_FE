@@ -1,20 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Steps, message } from "antd";
 import ChooseSport from "./formChooseSport";
 import RegisterInfoUser from "./formRegisterInfoUser";
 import styles from "./formStepsRegisterUser.module.scss"; // Import file CSS
 import classNames from "classnames/bind"; //npm i classnames
 import { registerProfile } from "~/services/registerProfileService";
+import { useLocation, useNavigate } from "react-router-dom";
 const cx = classNames.bind(styles);
 const RegisterInformation = () => {
   const [current, setCurrent] = useState(0);
-
+  const navigate = useNavigate();
+  const location = useLocation();
   // State lưu trữ dữ liệu từ các bước
   const [formData, setFormData] = useState({
     sports: [],
     userInfo: {},
   });
-
+  const userAccount = location.state?.userData || {};
   // Lưu dữ liệu từ các bước
   const handleStepData = (step, data) => {
     if (step === 0) {
@@ -36,14 +38,15 @@ const RegisterInformation = () => {
     const { userInfo, sports } = formData;
 
     return {
+      email: userAccount.email || '',  
+      password: userAccount.password || '', 
       firstname: userInfo.firstName || '',
       lastname: userInfo.lastName || '',
-      email: userInfo.email || 'default@example.com',
       birthday:userInfo.dob,
-      phone: userInfo.phone || '0000000000',
-      avatar: userInfo.preview || 'avatar_url',
-      bio: userInfo.bio || 'Bio of John',
-      gender: userInfo.gender || 'MALE',
+      phone: userInfo.phone || '',
+      avatar: userInfo.preview || '',
+      bio: userInfo.bio || '',
+      gender: userInfo.gender || '',
       sports: sports,
       address: {
         no: userInfo.address?.address || '',
@@ -63,11 +66,13 @@ const RegisterInformation = () => {
       const response = await registerProfile(formattedData); // Gửi dữ liệu lên server
       console.log("Dữ liệu phản hồi từ server:", response);
       message.success("Đăng ký thành công!");
+      localStorage.setItem("isRegistered", "true");
+      navigate("/home",{ replace: true });
     } catch (error) {
       message.error("Đã có lỗi xảy ra khi đăng ký.");
     }
   };
-  
+
 
   const steps = [
     {
