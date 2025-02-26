@@ -44,7 +44,7 @@ const RegisterInformation = () => {
       lastname: userInfo.lastName || '',
       birthday:userInfo.dob,
       phone: userInfo.phone || '',
-      avatar: userInfo.preview || '',
+      avatar: userInfo.file || '',
       bio: userInfo.bio || '',
       gender: userInfo.gender || '',
       sports: sports,

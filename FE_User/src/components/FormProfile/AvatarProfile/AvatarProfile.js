@@ -23,21 +23,49 @@ const modalStyle = {
 };
 
 // Modal
-const CropperModal = ({ src, modalOpen, setModalOpen, setPreview }) => {
+const CropperModal = ({ src, modalOpen, setModalOpen, onCropComplete, originalFileName }) => {
   const [slideValue, setSlideValue] = useState(10);
   const cropRef = useRef(null);
   const { t } = useTranslation();
 
-  //handle save
+  
   const handleSave = async () => {
-    if (cropRef) {
-      const dataUrl = cropRef.current.getImage().toDataURL();
-      const result = await fetch(dataUrl);
-      const blob = await result.blob();
-      setPreview(URL.createObjectURL(blob));
-      setModalOpen(false);
+    if (cropRef.current) {
+      const canvas = cropRef.current.getImageScaledToCanvas();
+      const size = 300;
+      const croppedCanvas = document.createElement("canvas");
+      croppedCanvas.width = size;
+      croppedCanvas.height = size;
+      const ctx = croppedCanvas.getContext("2d");
+
+      ctx.clearRect(0, 0, size, size);
+      ctx.drawImage(canvas, 0, 0, size, size);
+
+      ctx.globalCompositeOperation = "destination-in";
+      ctx.beginPath();
+      ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.fill();
+      croppedCanvas.toBlob((blob) => {
+        if (blob) {
+          const fileExtension = originalFileName.split('.').pop();
+          const newFileName = `cropped.${fileExtension}`;
+          const file = new File([blob], newFileName, { type: "image/png" });
+          const previewUrl = URL.createObjectURL(file);
+          setModalOpen(false);
+
+          // 🛑 Gọi đúng prop `onCropComplete`
+          onCropComplete(previewUrl, file);
+        } else {
+          console.error("❌ Không tạo được blob từ canvas!");
+        }
+      }, "image/png");
+    } else {
+      console.error("❌ cropRef.current không tồn tại!");
     }
   };
+
+  
 
   return (
     <Modal sx={modalStyle} open={modalOpen}>
@@ -52,32 +80,20 @@ const CropperModal = ({ src, modalOpen, setModalOpen, setPreview }) => {
           scale={slideValue / 10}
           rotate={0}
         />
-
-        {/* MUI Slider */}
         <Slider
           min={10}
           max={50}
-          sx={{
-            margin: "0 auto",
-            width: "80%",
-            color: "cyan",
-          }}
+          sx={{ margin: "0 auto", width: "80%", color: "cyan" }}
           size="medium"
-          defaultValue={slideValue}
           value={slideValue}
           onChange={(e) => setSlideValue(e.target.value)}
         />
-        <Box
-          sx={{
-            display: "flex",
-            padding: "10px",
-          }}
-        >
+        <Box sx={{ display: "flex", padding: "10px" }}>
           <Button
             size="large"
             sx={{ marginRight: "10px", color: "white", borderColor: "white" }}
             variant="outlined"
-            onClick={(e) => setModalOpen(false)}
+            onClick={() => setModalOpen(false)}
           >
             {t("modal-profile.button-cancel-cropper-image")}
           </Button>
@@ -95,76 +111,67 @@ const CropperModal = ({ src, modalOpen, setModalOpen, setPreview }) => {
   );
 };
 
-// Container
+
 const AvatarProfile = ({ control, onChange }) => {
-  // image src
+  const [profileData, setProfileData] = useState({
+    bio: "",
+    file: null,
+    preview: null,
+  });
+
   const [src, setSrc] = useState(null);
-
-  // preview
-  const [preview, setPreview] = useState(null);
-
-  // modal state
+  const [originalFileName, setOriginalFileName] = useState("avatar.png");
   const [modalOpen, setModalOpen] = useState(false);
-
-  // ref to control input element
   const inputRef = useRef(null);
   const [isEditing, setIsEditing] = useState(false);
   const contentEditableRef = useRef(null);
-  const [bio, setBio] = useState("");
 
   const handleChange = (event) => {
-    setBio(event.target.value);
+    setProfileData((prev) => ({
+      ...prev,
+      bio: event.target.value,
+    }));
 
     if (onChange) {
-      onChange({ bio: event.target.value, preview }); // Truyền dữ liệu bio và preview
+      onChange({ bio: event.target.value, file: profileData.file, preview: profileData.preview });
     }
   };
-  const enableEditing = () => {
-    setIsEditing(true);
-    setTimeout(() => {
-      const el = contentEditableRef.current;
-      el?.focus();
-      const range = document.createRange();
-      range.selectNodeContents(el);
-      range.collapse(false); // Di chuyển con trỏ đến cuối
-      const selection = window.getSelection();
-      selection?.removeAllRanges();
-      selection?.addRange(range);
-    }, 0);
-  };
 
-  const handleBlur = () => {
-    setIsEditing(false); // Đóng chế độ chỉnh sửa khi mất focus
-  };
-
-  // handle Click
   const handleInputClick = (e) => {
     e.preventDefault();
     inputRef.current.click();
   };
+
   const handleImgChange = (e) => {
     const file = e.target.files[0];
-    
-    // Kiểm tra xem file có phải là hình ảnh không
     if (file && file.type.startsWith("image/")) {
       setSrc(URL.createObjectURL(file));
+      setOriginalFileName(file.name);
       setModalOpen(true);
-
-      if (onChange) {
-        onChange({ bio, preview: file });
-      }
     } else {
       alert("Vui lòng chọn một tệp hình ảnh!");
-      setModalOpen(false);
     }
   };
-  
+
+  // 🔥 Khi crop xong, lưu file vào state và truyền lên form
+  const handleCropComplete = (previewUrl, file) => {
+    setProfileData((prev) => ({
+      ...prev,
+      file: file,
+      preview: previewUrl,
+    }));
+
+    if (onChange) {
+      onChange({ bio: profileData.bio, file, preview: previewUrl });
+    }
+  };
+
   return (
     <>
       <main className={cx("container")}>
         <div className={cx("img-container")}>
           <img
-            src={preview || require("~/components/Chat/images/ram.png")}
+            src={profileData.preview || require("~/components/Chat/images/ram.png")}
             alt=""
             width="100"
             height="100"
@@ -173,44 +180,32 @@ const AvatarProfile = ({ control, onChange }) => {
         <CropperModal
           modalOpen={modalOpen}
           src={src}
-          setPreview={(newPreview) => {
-            setPreview(newPreview);
-  
-            // Gửi preview ra cha khi được crop
-            if (onChange) {
-              onChange({ bio, preview: newPreview });
-            }
-          }}
-          
+          originalFileName={originalFileName}
+          onCropComplete={handleCropComplete} // ✅ Truyền đúng prop
           setModalOpen={setModalOpen}
         />
+
         <a href="/" onClick={handleInputClick} className="fs-4">
-          {/* <FcAddImage className="add-icon" /> */}
           <i className="fa-solid fa-upload pe-3"></i>
           <small>{t("modal-profile.button-upload-avatar")}</small>
         </a>
-        <input
-          type="file"
-          accept="image/*"
-          ref={inputRef}
-          onChange={handleImgChange}
-        />
+        <input type="file" accept="image/*" ref={inputRef} onChange={handleImgChange} />
 
         <div className="mt-5">
           <label className="pb-3 fs-4">{t("modal-profile.label-form-infor-personal-about_me")}</label>
           <span
-            onClick={enableEditing}
-            className={cx("edit-icon", { active: isEditing },"px-2")}
+            onClick={() => setIsEditing(true)}
+            className={cx("edit-icon", { active: isEditing }, "px-2")}
           >
             <i className="fa-regular fa-pen-to-square"></i>
           </span>
           <ContentEditable
             innerRef={contentEditableRef}
-            html={bio} // Nội dung hiển thị
-            onChange={handleChange} // Lắng nghe sự thay đổi nội dung
-            onFocus={() => setIsEditing(true)} // Chuyển sang trạng thái chỉnh sửa
-            onBlur={handleBlur} // Đóng chế độ chỉnh sửa khi nhấn ra ngoài
-            tagName="div" // Thẻ HTML chứa nội dung (p, div, hoặc span)
+            html={profileData.bio}
+            onChange={handleChange}
+            onFocus={() => setIsEditing(true)}
+            onBlur={() => setIsEditing(false)}
+            tagName="div"
             className={cx("bio-text", { editing: isEditing })}
           />
         </div>
