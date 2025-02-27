@@ -2,52 +2,46 @@ import * as request from "~/utils/httpRequest";
 
 
 export const registerProfile = async (data) => {
-     console.log("data trc khi gửi lên server", data);
-    //đang có vấn đề về gửi sport lên server
+    console.log("Dữ liệu trước khi gửi lên server:", data);
+
     try {
         const formData = new FormData();
 
-        // Kiểm tra và chỉ append những trường có giá trị
-        if (data.firstname) formData.append("firstname", data.firstname);
-        if (data.lastname) formData.append("lastname", data.lastname);
-        if (data.email) formData.append("email", data.email); 
-        if (data.password) formData.append("password", data.password); 
-        if (data.birthday) formData.append("birthday", data.birthday);
-        if (data.phone) formData.append("phone", data.phone);
-        if (data.avatar) formData.append("avatar", data.avatar);  
-        if (data.bio) formData.append("bio", data.bio);
-        if (data.gender) formData.append("gender", data.gender);
+        // Chuyển userProfileRequest thành JSON rồi gửi vào formData
+        const userProfileRequest = {
+            firstname: data.firstname,
+            lastname: data.lastname,
+            email: data.email,
+            password: data.password,
+            birthday: data.birthday,
+            phone: data.phone,
+            bio: data.bio,
+            gender: data.gender,
+            sports: data.sports || [], // Mảng sports
+            address: data.address || {}, // Object address
+        };
 
-        // Môn thể thao (sports) là mảng, kiểm tra nếu có giá trị thì gửi
-        if (data.sports && data.sports.length > 0) {
-            data.sports.forEach(sportId => {
-                formData.append("sports[]", sportId); 
-            });
-        }
-        
+        formData.append("userProfileRequest", JSON.stringify(userProfileRequest));
 
-        // Địa chỉ, kiểm tra nếu có giá trị thì gửi
-        if (data.address) {
-            if (data.address.no) formData.append("address[no]", data.address.no);
-            if (data.address.city) formData.append("address[city]", data.address.city);
-            if (data.address.district) formData.append("address[district]", data.address.district);
-            if (data.address.ward) formData.append("address[ward]", data.address.ward);
-        }
-        // console.log("Dữ liệu gửi lên server:", JSON.stringify(data, null, 2));
-        // formData.forEach((value, key) => {
-        //     console.log(key, value);
-        // });
-        
-        // Gửi yêu cầu với formData đã được chuẩn bị
+        // Thêm avatar nếu có
+        if (data.avatar instanceof File) {
+            console.log("✅ File ảnh hợp lệ:", data.avatar);
+            formData.append("avatar", data.avatar);  
+          } else {
+            console.error("❌ Không tìm thấy file ảnh để gửi lên server!");
+          }
+
+        // Gửi request với FormData
         const res = await request.post("userprofiles/save", formData, {
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
         });
-        // console.log("res trả về từ api: ", res.data);
+
+        console.log("Kết quả trả về từ API: ", res.data);
         return res.data;
     } catch (error) {
-        console.error("Failed to create profile:", error);
+        console.error("Lỗi khi tạo profile:", error);
         throw error;
     }
 };
-
-  

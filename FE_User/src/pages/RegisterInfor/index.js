@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import { Button, Steps, message } from "antd";
 import ChooseSport from "./formChooseSport";
 import RegisterInfoUser from "./formRegisterInfoUser";
@@ -44,7 +44,7 @@ const RegisterInformation = () => {
       lastname: userInfo.lastName || '',
       birthday:userInfo.dob,
       phone: userInfo.phone || '',
-      avatar: userInfo.preview || '',
+      avatar: userInfo.file || '',
       bio: userInfo.bio || '',
       gender: userInfo.gender || '',
       sports: sports,
@@ -59,19 +59,25 @@ const RegisterInformation = () => {
 
 
   const handleComplete = async () => {
-    const formattedData = formatDataForApi();  // Chuyển dữ liệu sang dạng đúng
-    console.log("Dữ liệu đăng ký:", formattedData);
-  
     try {
-      const response = await registerProfile(formattedData); // Gửi dữ liệu lên server
-      console.log("Dữ liệu phản hồi từ server:", response);
-      message.success("Đăng ký thành công!");
-      localStorage.setItem("isRegistered", "true");
-      navigate("/home",{ replace: true });
+      const formattedData = formatDataForApi(); // Chuyển dữ liệu sang dạng đúng
+      console.log("Dữ liệu gửi lên server:", formattedData);
+  
+      const response = await registerProfile(formattedData); // Gửi API
+      console.log("Phản hồi từ server:", response);
+      if (response) {
+        message.success("Đăng ký thành công!");
+        localStorage.setItem("token-login", response); // Lưu trạng thái đăng ký
+        navigate("/home", { replace: true });
+      } else {
+        throw new Error(response?.data?.message || "Có lỗi xảy ra");
+      }
     } catch (error) {
-      message.error("Đã có lỗi xảy ra khi đăng ký.");
+      console.error("Lỗi đăng ký:", error);
+      message.error(error.message || "Đã có lỗi xảy ra khi đăng ký.");
     }
   };
+  
 
 
   const steps = [
