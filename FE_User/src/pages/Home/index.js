@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import { Card, Row, Col, Modal } from "antd";
 import styles from "./home.module.scss";
 import FilterUser from "./filterUser";
@@ -45,12 +45,12 @@ function Home() {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-  useEffect(() => {
-    const isRegistered = localStorage.getItem("isRegistered");
-    if (!isRegistered) {
-      navigate("/register", { replace: true });  // Điều hướng về trang đăng ký nếu chưa đăng ký
-    }
-  }, [navigate]);
+  // useEffect(() => {
+  //   const isRegistered = localStorage.getItem("isRegistered");
+  //   if (!isRegistered) {
+  //     navigate("/register", { replace: true });  // Điều hướng về trang đăng ký nếu chưa đăng ký
+  //   }
+  // }, [navigate]);
   return (
     <div>
       <div className="p-5">

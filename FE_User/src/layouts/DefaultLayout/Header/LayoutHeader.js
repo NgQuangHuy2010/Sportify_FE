@@ -62,22 +62,41 @@ function Header() {
   const closeModal = () => {
     setIsModalOpen(false); 
   };
-  const handleSave = (data) => {
-    //console.log("Đồng ý");
-    console.log("test form", data);
-  };
+  // const handleSave = (data) => {
+  //   //console.log("Đồng ý");
+  //   console.log("test form", data);
+  // };
   const handleCancel = () => {
     //console.log("Hủy");
     closeModal();
   };
-  //end modal profile
   useEffect(() => {
-    // Kiểm tra giá trị isRegistered trong localStorage
-    const registeredStatus = localStorage.getItem("isRegistered");
-    if (registeredStatus === "true") {
-      setIsRegistered(true); // Nếu đã đăng ký, đặt isRegistered = true
+    const checkToken = () => {
+      setIsRegistered(!!localStorage.getItem("token-login"));
+    };
+  
+    window.addEventListener("storage", checkToken); // Lắng nghe thay đổi trên localStorage
+    return () => window.removeEventListener("storage", checkToken);
+  }, []);
+  
+  const handleLogout = () => {
+    localStorage.removeItem("token-login"); // Xóa token khỏi localStorage
+    setIsRegistered(false); // Cập nhật state để ẩn menu user
+    navigate("/login", { replace: true }); // Chuyển hướng về trang login
+  };
+
+ // check xem có token ko
+  useEffect(() => {
+    const token = localStorage.getItem("token-login");
+    if (token) {
+      setIsRegistered(true);
+    } else {
+      setIsRegistered(false);
+      navigate("/login", { replace: true }); // Nếu không có token, về trang login
     }
   }, []);
+
+  
   const userMenu = [
     {
       icon: <i className="fa-solid fa-user"></i>,
@@ -93,7 +112,7 @@ function Header() {
     {
       icon: <i className="fa-solid fa-right-from-bracket"></i>,
       title: t("header.category-user-logout"),
-      to: "/logout",
+      onClick: handleLogout,
       separate: true,
     },
   ];
@@ -104,20 +123,14 @@ function Header() {
       navigate("/"); // Điều hướng đến trang hiện tại nếu không có currentUser
     }
   };
-  const showLogin = () => {
-    navigate("/login"); // Điều hướng đến trang đăng nhập
-  };
 
-  // const showRegister = () => {
-  //   navigate("/register"); // Điều hướng đến trang đăng ký
-  // };
   return (
     <>
       <ModalComponent
         isOpen={isModalOpen}
         onClose={closeModal} // Đóng modal khi onClose được gọi
         title={t("modal-profile.title-modal")}
-        buttonSave={handleSubmit(handleSave)} // Hàm khi nhấn OK
+        // buttonSave={handleSubmit(handleSave)} // Hàm khi nhấn OK
         buttonCancel={handleCancel} // Hàm khi nhấn Hủy
       >
         {/* Nội dung của modal thay đổi tùy vào form được chọn */}
@@ -175,13 +188,13 @@ function Header() {
               </>
             ) : (
               <>
-                <Button
+                {/* <Button
                   type="primary"
                   onClick={showLogin}
                   className={cx("me-3")}
                 >
                   {t("header.button-login")}
-                </Button>
+                </Button> */}
                 {/* <Button className={cx("btn-register")} onClick={showRegister}>
                   {t("header.button-register")}
                 </Button> */}
