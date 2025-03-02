@@ -12,4 +12,8 @@ export const get = async (url,options={})=>{
 export const post = async (url, data, config = {}) => {
     return await httpRequest.post(url, data, config);
 };
+
+export const put = async (url, data, config = {}) => {
+    return await httpRequest.put(url, data, config);
+};
 export default httpRequest

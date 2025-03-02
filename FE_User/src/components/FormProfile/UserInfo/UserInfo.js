@@ -6,6 +6,7 @@ import classNames from "classnames/bind";
 import locale from "antd/es/date-picker/locale/vi_VN";
 import styles from "./UserInfo.module.scss";
 import AddressForm from "~/components/LocationAddress/AddressForm";
+import dayjs from "dayjs";
 
 const cx = classNames.bind(styles);
 const { Option } = Select;
@@ -16,7 +17,8 @@ const customLocale = {
     today: null, // Xóa chữ "Today"
   },
 };
-const UserInfo = ({ control }) => {
+const UserInfo = ({ control , userInfo }) => {
+  // console.log("modal user",userInfo);
   const { t } = useTranslation();
   const [selectedCity, setSelectedCity] = useState(null);
   const [selectedDistrict, setSelectedDistrict] = useState(null);
@@ -27,14 +29,17 @@ const UserInfo = ({ control }) => {
     today.setHours(0, 0, 0, 0); // Đặt giờ phút giây về 0 để so sánh chính xác
     return current && current >= today;
   };
+
+  
   return (
     <div className={cx("container")}>
-      <Form layout="vertical">
+      <Form layout="vertical" style={{width:"100%"}}>
         <div className="row">
         <div className="col-md-6">
             <Controller
               name="lastName"  // Tên trường phải trùng với tên trong `useForm` của component cha
               control={control}  // Truyền `control` từ component cha
+              defaultValue={userInfo?.lastname || ""}
               render={({ field }) => (
                 <Form.Item label={t("modal-profile.label-form-infor-personal-last_name")}>
                   <Input {...field} placeholder={t("modal-profile.placeholder-form-infor-personal-last_name")} />
@@ -46,6 +51,7 @@ const UserInfo = ({ control }) => {
             <Controller
               name="firstName"  // Tên trường phải trùng với tên trong `useForm` của component cha
               control={control}  // Truyền `control` từ component cha
+              defaultValue={userInfo?.firstname || ""}
               render={({ field }) => (
                 <Form.Item label={t("modal-profile.label-form-infor-personal-first_name")}>
                   <Input {...field} placeholder={t("modal-profile.placeholder-form-infor-personal-first_name")} />
@@ -61,6 +67,7 @@ const UserInfo = ({ control }) => {
             <Controller
               name="gender" 
               control={control}  
+              defaultValue={userInfo?.gender?.toLowerCase() || "other"}
               render={({ field }) => (
                 <Form.Item label={t("modal-profile.label-form-infor-personal-gender")}>
                   <Select {...field} placeholder={t("modal-profile.placeholder-form-infor-personal-gender")}>
@@ -77,6 +84,7 @@ const UserInfo = ({ control }) => {
             <Controller
               name="dob"  // Trường dob trong form
               control={control}  // Truyền `control` từ component cha
+              defaultValue={userInfo?.birthday ? dayjs(userInfo.birthday, "YYYY-MM-DD") : null}
               render={({ field }) => (
                 <Form.Item label={t("modal-profile.label-form-infor-personal-dob")}>
                   <DatePicker
@@ -99,8 +107,11 @@ const UserInfo = ({ control }) => {
         selectedDistrict={selectedDistrict}
         setSelectedDistrict={setSelectedDistrict}
         wards={wards}
-        setWards={setWards}/>
-          
+        setWards={setWards}
+        userInfo={userInfo}
+        control={control}
+        />
+
       </Form>
     </div>
   );

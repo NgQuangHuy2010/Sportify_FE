@@ -80,6 +80,7 @@ const Login = () => {
   
 
   const showRegister = () => {
+
     navigate("/register"); // Điều hướng đến trang đăng ký
   };
 

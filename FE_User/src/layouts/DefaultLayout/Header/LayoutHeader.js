@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate , useLocation} from "react-router-dom";
 import classNames from "classnames/bind"; //npm i classnames
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
-import { Button } from "antd";
 //class
 import styles from "./Header.module.scss";
 import images from "~/assets/images";
@@ -17,6 +16,9 @@ import ModalComponent from "~/components/ModalComponent/ModalComponent";
 import FormConnectInformation from "~/components/FormProfile/Connection_Information";
 import FormPersonalInformation from "~/components/FormProfile/Personal_Information";
 import IndexHeaderItems from "~/components/ModalComponent/HeaderItemModal/IndexHeaderItemModal";
+import { infoUser } from "~/services/infoUser";
+import { updateProfile } from "~/services/updateProfile";
+import { message } from "antd";
 const cx = classNames.bind(styles);
 
 const MENU_ITEM = [
@@ -48,24 +50,58 @@ const MENU_ITEM = [
   // },
 ];
 function Header() {
+  const [avatarPreview, setAvatarPreview] = useState(null); // State lưu ảnh preview
+
   const [isRegistered, setIsRegistered] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { i18n, t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeForm, setActiveForm] = useState("formPersonal");
+  const [userInfo, setUser] = useState(null);
+  const { control, handleSubmit, setValue } = useForm();
 
-  const { control, handleSubmit } = useForm();
+
+  const formatDate = (date) => {
+    if (!date) return null; // Nếu không có giá trị, trả về null
+    const year = date.$y; // Lấy năm từ đối tượng Day.js
+    const month = String(date.$M + 1).padStart(2, "0"); // Tháng bắt đầu từ 0, cần +1 và định dạng 2 chữ số
+    const day = String(date.$D).padStart(2, "0"); // Định dạng ngày thành 2 chữ số
+    return `${year}-${month}-${day}`;
+  };
+
+
   //modal profile
-  const showModal = () => {
+  const showModal =  () => {
     setIsModalOpen(true);
+    setAvatarPreview(null);
   };
   const closeModal = () => {
-    setIsModalOpen(false); 
+    setIsModalOpen(false);
   };
-  // const handleSave = (data) => {
-  //   //console.log("Đồng ý");
-  //   console.log("test form", data);
-  // };
+  const handleSave =async (data) => {
+    const formattedData = {
+      firstName: data.firstName,
+      lastName: data.lastName,    
+      email: userInfo.email,
+      gender: data.gender ? data.gender.toUpperCase() : null,
+      birthday: data.dob ? formatDate(data.dob) : null, 
+      connectSetting: {
+        status: data.status ? 1: 0,
+        genderFind: data.genderFind,
+        ageMin: data.ageRange[0],  
+        ageMax: data.ageRange[1], 
+      },
+    };
+    // console.log("test form", formattedData);
+    const response = await updateProfile(userInfo.userId, formattedData);
+    if (response) {
+    closeModal();
+    message.success("Cập nhật thành công!!!");
+    } else {
+      console.error("Update failed!");
+    }
+  };
   const handleCancel = () => {
     //console.log("Hủy");
     closeModal();
@@ -74,29 +110,44 @@ function Header() {
     const checkToken = () => {
       setIsRegistered(!!localStorage.getItem("token-login"));
     };
-  
+
     window.addEventListener("storage", checkToken); // Lắng nghe thay đổi trên localStorage
     return () => window.removeEventListener("storage", checkToken);
   }, []);
-  
+
   const handleLogout = () => {
     localStorage.removeItem("token-login"); // Xóa token khỏi localStorage
     setIsRegistered(false); // Cập nhật state để ẩn menu user
     navigate("/login", { replace: true }); // Chuyển hướng về trang login
   };
 
- // check xem có token ko
+  // check xem có token ko
   useEffect(() => {
     const token = localStorage.getItem("token-login");
     if (token) {
       setIsRegistered(true);
     } else {
       setIsRegistered(false);
-      navigate("/login", { replace: true }); // Nếu không có token, về trang login
+      if (location.pathname !== "/register") { 
+        navigate("/login", { replace: true });
+      } // Nếu không có token, về trang login
     }
-  }, []);
+  }, [navigate]);
 
+  //lấy thông tin user
+  useEffect(() => {
+    const token = localStorage.getItem("token-login");
   
+    if (token) {
+      infoUser(token).then((data) => {
+        if (data) setUser(data);
+        // console.log(data);
+      });
+    }
+    
+  }, [localStorage.getItem("token-login")]); // 🔥 Theo dõi sự thay đổi của token
+  
+
   const userMenu = [
     {
       icon: <i className="fa-solid fa-user"></i>,
@@ -130,8 +181,9 @@ function Header() {
         isOpen={isModalOpen}
         onClose={closeModal} // Đóng modal khi onClose được gọi
         title={t("modal-profile.title-modal")}
-        // buttonSave={handleSubmit(handleSave)} // Hàm khi nhấn OK
+        buttonSave={handleSubmit(handleSave)} // Hàm khi nhấn OK
         buttonCancel={handleCancel} // Hàm khi nhấn Hủy
+        // buttonSave={handleSave}
       >
         {/* Nội dung của modal thay đổi tùy vào form được chọn */}
         <div>
@@ -141,10 +193,15 @@ function Header() {
           />
           {/* Hiển thị form tương ứng với `activeForm` */}
           {activeForm === "formPersonal" && (
-            <FormPersonalInformation control={control} />
+            <FormPersonalInformation
+              control={control}
+              userInfo={userInfo}
+              avatarPreview={avatarPreview}
+              setAvatarPreview={setAvatarPreview}
+            />
           )}
           {activeForm === "formConnect" && (
-            <FormConnectInformation control={control} />
+            <FormConnectInformation control={control} userInfo={userInfo} setValue={setValue}/>
           )}
         </div>
       </ModalComponent>
@@ -179,7 +236,7 @@ function Header() {
                   items={isRegistered ? userMenu : MENU_ITEM}
                 >
                   <img
-                    src={require("~/components/Chat/images/ram.png")}
+                    src={`${process.env.REACT_APP_PATH_IMAGE}avatar/${userInfo?.avatar}`}
                     className={cx("user-avatar")}
                     alt="Nguyen Huy"
                   />

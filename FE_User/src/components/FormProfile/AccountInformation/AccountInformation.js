@@ -7,7 +7,9 @@ import { useTranslation } from "react-i18next";
 
 const cx = classNames.bind(styles);
 
-function AccountInformation() {
+function AccountInformation({userInfo}) {
+  // console.log("account setting", userInfo);
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { t } = useTranslation();
 
@@ -27,7 +29,7 @@ function AccountInformation() {
   return (
     <>
       <Form.Item label="Email" name="email">
-        <Input disabled />
+        <Input disabled value={userInfo.email}/>
       </Form.Item>
 
       <Form.Item label={t("modal-profile.label-form-account-password")} name="password">
