@@ -1,5 +1,5 @@
 import { Box, Modal, Slider, Button } from "@mui/material";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import AvatarEditor from "react-avatar-editor";
 import ContentEditable from "react-contenteditable";
@@ -112,20 +112,21 @@ const CropperModal = ({ src, modalOpen, setModalOpen, onCropComplete, originalFi
 };
 
 
-const AvatarProfile = ({ control, onChange }) => {
-  const [profileData, setProfileData] = useState({
-    bio: "",
-    file: null,
-    preview: null,
-  });
-
+const AvatarProfile = ({ control, onChange ,userInfo, avatarPreview, setAvatarPreview}) => {  
   const [src, setSrc] = useState(null);
   const [originalFileName, setOriginalFileName] = useState("avatar.png");
   const [modalOpen, setModalOpen] = useState(false);
   const inputRef = useRef(null);
   const [isEditing, setIsEditing] = useState(false);
   const contentEditableRef = useRef(null);
+  const [profileData, setProfileData] = useState({
+    bio: "",
+    file: null,
+    preview: null,
+  });
 
+
+  
   const handleChange = (event) => {
     setProfileData((prev) => ({
       ...prev,
@@ -155,23 +156,50 @@ const AvatarProfile = ({ control, onChange }) => {
 
   // 🔥 Khi crop xong, lưu file vào state và truyền lên form
   const handleCropComplete = (previewUrl, file) => {
-    setProfileData((prev) => ({
-      ...prev,
-      file: file,
-      preview: previewUrl,
-    }));
-
-    if (onChange) {
-      onChange({ bio: profileData.bio, file, preview: previewUrl });
+    setProfileData((prev) => {
+      const newProfileData = {
+        ...prev,
+        file: file,
+        preview: previewUrl,
+      };
+  
+      // Gọi onChange với dữ liệu mới
+      if (onChange) {
+        onChange({
+          bio: newProfileData.bio,
+          file: newProfileData.file,
+          preview: newProfileData.preview,
+        });
+      }
+  
+      return newProfileData;
+    });
+    try {
+      setAvatarPreview(previewUrl);
+    } catch (error) {
+      console.error("Lỗi khi cập nhật Avatar Preview:", error);
     }
+  
+    // Cập nhật preview lên component cha
   };
+  
+  useEffect(() => {
+    if (!avatarPreview) {
+      setProfileData((prev) => ({
+        ...prev,
+        preview: `${process.env.REACT_APP_PATH_IMAGE}avatar/${userInfo?.avatar}`,
+      }));
+    }
+  }, [userInfo, avatarPreview]);
+
+  
 
   return (
     <>
       <main className={cx("container")}>
         <div className={cx("img-container")}>
           <img
-            src={profileData.preview || require("~/components/Chat/images/ram.png")}
+         src={profileData.preview}
             alt=""
             width="100"
             height="100"

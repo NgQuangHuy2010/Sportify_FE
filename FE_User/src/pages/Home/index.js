@@ -1,42 +1,21 @@
-import React, {  useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Row, Col, Modal } from "antd";
 import styles from "./home.module.scss";
 import FilterUser from "./filterUser";
 import classNames from "classnames/bind";
 import BookVenuesCarousel from "./bookVenuesCarousel";
 import { useNavigate } from "react-router-dom";
+import { getAllUser } from "~/services/getAllUser";
+import { infoUser } from "~/services/infoUser";
 
 const cx = classNames.bind(styles);
 const { Meta } = Card;
-const names = [
-  "Nguyễn Văn An", "Trần Thị Bích", "Lê Minh Hoàng", "Phạm Văn Dũng",
-  "Hoàng Thị Lan", "Bùi Ngọc Huy", "Đặng Quang Minh", "Võ Thị Mai",
-  "Lý Văn Thanh", "Tô Thị Hạnh", "Cao Xuân Trường", "Đỗ Thị Thu"
-];
-const images = [
-  "https://media.loveitopcdn.com/54/091609-thumb-15222092411420-ds-770.jpg",
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQlGh8iKfrKwPt8H_jN5NDGwWWrByNffSBjazJIeHc6kQSHaxgKwGzRQ_8mcdVK_7bSUmQ&usqp=CAU",
-  "https://www.inhuydat.com/uploads/hinhthe/Chup-anh-the-dep-nhat-TPHCM-7.jpg",
-  "https://www.inhuydat.com/uploads/hinhthe/IMG_2793_copy.jpg",
-  "https://studiochupanhdep.com/Upload/Images/Album/anh-the-2023.jpg",
-  "https://i.pinimg.com/474x/bb/1f/9c/bb1f9c30bc815087d52d1e5e86cde219.jpg",
-  "https://smilemedia.vn/wp-content/uploads/2022/09/chup-hinh-the-dep-e1664379729855.jpg",
-  "https://anhvienpiano.com/wp-content/uploads/2021/12/anh-visa-dep.png"
-];
-const getRandomItem = (arr) => arr[Math.floor(Math.random() * arr.length)];
-
-const data = Array.from({ length: 8 }, (_, index) => ({
-  id: index + 1,
-  title: getRandomItem(names),
-  // description: `Đây là mô tả cho ${getRandomName()}`,
-  image: getRandomItem(images),
-}));
-
 
 function Home() {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState(null);
+  const [users, setUsers] = useState([]);
   const showModal = (profile) => {
     setSelectedProfile(profile);
     setIsModalOpen(true);
@@ -45,12 +24,32 @@ function Home() {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-  // useEffect(() => {
-  //   const isRegistered = localStorage.getItem("isRegistered");
-  //   if (!isRegistered) {
-  //     navigate("/register", { replace: true });  // Điều hướng về trang đăng ký nếu chưa đăng ký
-  //   }
-  // }, [navigate]);
+
+  //get all user
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const token = localStorage.getItem("token-login"); // Lấy token từ localStorage
+        if (!token) return; // Nếu không có token, không gọi API
+
+        const [allUsers, currentUser] = await Promise.all([
+          getAllUser(),
+          infoUser(token),
+        ]);
+        if (allUsers && currentUser) {
+          // Lọc ra danh sách user không phải là user hiện tại
+          const filteredUsers = allUsers.filter(
+            (user) => user.userId !== currentUser.userId
+          );
+          setUsers(filteredUsers);
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu:", error);
+      }
+    };
+    fetchUsers();
+  }, []);
+
   return (
     <div>
       <div className="p-5">
@@ -61,62 +60,64 @@ function Home() {
           <FilterUser />
         </div>
         <Row gutter={[16, 16]} justify="center">
-          {data.map((item) => (
-            <Col
-              key={item.id}
-              xs={24}
-              sm={12}
-              md={8}
-              lg={6}
-              className="d-flex justify-content-center"
-            >
-              <Card
-                className={cx("card-profile")}
-                hoverable
-                cover={
+          {users.map((item) => (
+            <Col key={item.userId} xs={24} sm={12} md={8} lg={6}>
+              <Card className={cx("card-profile")} hoverable style={{width:"unset"}}>
+                <div className="d-flex align-items-center">
+                  {/* Ảnh đại diện hình tròn */}
                   <img
-                  style={{height:"250px", objectFit:"cover"}}
+                    src={`${process.env.REACT_APP_PATH_IMAGE}avatar/${item?.avatar}`}
                     alt={item.title}
-                    src={item.image}
-                    onClick={() => showModal(item)} // Chỉ gọi showModal khi nhấp vào ảnh
                     className={cx("img-profile")}
+                    style={{
+                      width: "80px",
+                      height: "80px",
+                      borderRadius: "50%", // Giữ hình tròn
+                      objectFit: "cover",
+                      marginRight: "16px",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => showModal(item)}
                   />
-                }
-                actions={[
-                  <div className="d-flex align-items-center justify-content-around">
-                    <button
-                      className={cx("button-connect")}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <i className="fa-solid fa-user-plus"></i>
-                      <span className="ms-2">Gửi lời mời</span>
-                    </button>
-                    <button
-                      className={cx("button-connect")}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <i className="fa-solid fa-envelope"></i>
-                      <span className="ms-2">Lời nhắn</span>
-                    </button>
-                  </div>,
-                ]}
-              >
-                <Meta
-                  title={
+
+                  {/* Thông tin cá nhân */}
+                  <div>
                     <span
                       className={cx("title-profile")}
+                      style={{
+                        fontWeight: "bold",
+                        fontSize: "18px",
+                        cursor: "pointer",
+                      }}
                       onClick={() => showModal(item)}
                     >
-                      {item.title}
+                      {item.lastname} {item.firstname}
                     </span>
-                  } // Chỉ gọi showModal khi nhấp vào tiêu đề
-                  description={item.description}
-                />
+                    <p style={{ margin: "4px 0", color: "#666" }}>{item.bio}</p>
+                  </div>
+                </div>
+
+                {/* Hành động */}
+                <div className="d-flex justify-content-around mt-5 ">
+                  <button
+                    className={cx("button-connect")}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <i className="fa-solid fa-user-plus"></i>
+                    <span className="ms-2">Gửi lời mời</span>
+                  </button>
+                  <button
+                    className={cx("button-connect")}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <i className="fa-solid fa-envelope"></i>
+                    <span className="ms-2">Lời nhắn</span>
+                  </button>
+                </div>
               </Card>
             </Col>
           ))}
         </Row>
-
         <Modal
           title="Thông tin người dùng"
           open={isModalOpen}

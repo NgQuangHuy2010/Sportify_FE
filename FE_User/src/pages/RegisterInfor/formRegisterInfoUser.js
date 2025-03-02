@@ -61,12 +61,13 @@ const RegisterInfoUser = ({ initialData, onSubmit, prev }) => {
       dob: formData.dob ? formatDate(formData.dob) : null, // Format ngày sinh
       ...profileData, // Kết hợp dữ liệu từ AvatarProfile
     };
-    console.log("test",formattedData);
+    // console.log("test",formattedData);
     
     onSubmit(formattedData); // Truyền dữ liệu đầy đủ lên cha
   };
   return (
     <form
+    style={{width:"100%"}}
     onSubmit={handleSubmit(handleFormSubmit)}
     >
       <div className="row">

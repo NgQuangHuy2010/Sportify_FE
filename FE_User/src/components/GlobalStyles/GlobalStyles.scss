@@ -152,3 +152,9 @@ body {
 .css-d7l1ni-option{
   font-size: 14px !important;
 }
+
+
+:where(.css-dev-only-do-not-override-tpassh).ant-card-bordered .ant-card-cover{
+  display: flex !important;
+  justify-content: center !important;
+}
