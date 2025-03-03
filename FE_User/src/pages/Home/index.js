@@ -33,7 +33,7 @@ function Home() {
         if (!token) return; // Nếu không có token, không gọi API
 
         const [allUsers, currentUser] = await Promise.all([
-          getAllUser(),
+          getAllUser(token),
           infoUser(token),
         ]);
         if (allUsers && currentUser) {
@@ -41,6 +41,9 @@ function Home() {
           const filteredUsers = allUsers.filter(
             (user) => user.userId !== currentUser.userId
           );
+
+          console.log("user", filteredUsers);
+
           setUsers(filteredUsers);
         }
       } catch (error) {
@@ -59,10 +62,14 @@ function Home() {
         <div className="p-5">
           <FilterUser />
         </div>
-        <Row gutter={[16, 16]} justify="center">
+        <Row gutter={[16, 16]}>
           {users.map((item) => (
             <Col key={item.userId} xs={24} sm={12} md={8} lg={6}>
-              <Card className={cx("card-profile")} hoverable style={{width:"unset"}}>
+              <Card
+                className={cx("card-profile")}
+                hoverable
+                style={{ width: "unset" }}
+              >
                 <div className="d-flex align-items-center">
                   {/* Ảnh đại diện hình tròn */}
                   <img
@@ -93,7 +100,52 @@ function Home() {
                     >
                       {item.lastname} {item.firstname}
                     </span>
-                    <p style={{ margin: "4px 0", color: "#666" }}>{item.bio}</p>
+                    <p
+                      style={{
+                        margin: "4px 0",
+                        color: "#666",
+                        minHeight: "20px", // Đặt chiều cao tối thiểu để giữ layout cố định
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      {item.bio || " "}
+                    </p>
+
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                      }}
+                    >
+                      {item.sports.length > 0 ? (
+                        item.sports.map((sport, index) => (
+                          <div
+                            key={index}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "4px",
+                            }}
+                          >
+                            <img
+                              src={`${process.env.REACT_APP_PATH_IMAGE}sports/${sport.imageUrl}`}
+                              alt={sport.sportName}
+                              style={{
+                                width: "20px",
+                                height: "20px",
+                                objectFit: "cover",
+                                borderRadius: "4px",
+                              }}
+                            />
+                            <span>{sport.sportName}</span>
+                          </div>
+                        ))
+                      ) : (
+                        <span>Không có môn thể thao</span>
+                      )}
+                    </div>
                   </div>
                 </div>
 

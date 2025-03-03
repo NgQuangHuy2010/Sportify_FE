@@ -3,10 +3,12 @@ import dayjs from "dayjs";
 import { Modal, TimePicker, Form, DatePicker, Select, Button, message } from "antd";
 import { useForm, Controller } from "react-hook-form";
 import { getVenues_Sports_Fields, getBookedSlots, postBookedSlots } from "~/services/venues";
+import { infoUser } from "~/services/infoUser";
 const BookingModal = ({ visible, onClose, venue }) => {
     const { control, handleSubmit, reset , setError, watch,setValue } = useForm();
     const [sportsFields, setSportsFields] = useState([]);
     const [bookedSlots, setBookedSlots] = useState([]);
+    const [user, setUser] = useState([]);
 // /////////////////
     const selectedField = watch("sportsField");
     const selectedDate = watch("date");
@@ -105,10 +107,10 @@ const BookingModal = ({ visible, onClose, venue }) => {
         });
         return;
       }
-    
+   
       // Chuẩn bị dữ liệu gửi API
       const payload = {
-        userId: 63, 
+        userId: user.userId, 
         sportFieldId: data.sportsField, 
         bookingDate: data.date.format("YYYY-MM-DD"),
         startTime: data.startTime.format("HH:mm"),
@@ -138,7 +140,16 @@ const BookingModal = ({ visible, onClose, venue }) => {
     reset(); 
     onClose(); 
   };
+  useEffect(() => {
+    const token = localStorage.getItem("token-login");
   
+    if (token) {
+      infoUser(token).then((data) => {
+        if (data) setUser(data);
+      });
+    }
+    
+  }, [localStorage.getItem("token-login")]);  
   return (
     <Modal
       open={visible}
