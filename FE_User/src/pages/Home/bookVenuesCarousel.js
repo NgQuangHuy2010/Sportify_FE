@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Carousel,
   Row as BsRow,
@@ -9,53 +9,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Button } from "antd";
 import config from "~/config";
 import { useNavigate } from "react-router-dom";
+import { getAllVenues } from "~/services/venues";
 
-const items = [
-  {
-    title: "Sân bóng Anh Tú",
-    text: "A beautiful event space for weddings and parties.",
-    image:
-      "https://playo.gumlet.io/BTSTURFCLUB20240531052641675463/BTSTurfClub1717174005529.jpg?mode=crop&crop=smart&h=200&width=450&q=40&format=webp",
-  },
-  {
-    title: "Sân bóng Anh Huy",
-    text: "Modern and stylish location for corporate events.",
-    image:
-      "https://playo.gumlet.io/DDSASTJOSEPHSBOYSHIGHSCHOOLEUROPEANS20220919091705834667/DDSAStJosephsEuropeanBoysHighSchool1713331050831.jpg?mode=crop&crop=smart&h=200&width=450&q=75",
-  },
-  {
-    title: "Sân bóng Vì Tương Lai ",
-    text: "A scenic outdoor venue with breathtaking views.",
-    image:
-      "https://playo.gumlet.io/VPLAYSPORTS/FusionTheTurf1642605177649.jpg?mode=crop&crop=smart&h=200&width=450&q=75",
-  },
-  {
-    title: "Sân bóng Cây Da",
-    text: "Luxury ballroom with premium amenities.",
-    image:
-      "https://playo.gumlet.io/DEPOT18SPORTS20250202081042972914/Depot18Sports1738672619162.jpg?mode=crop&crop=smart&h=200&width=450&q=40&format=webp",
-  },
-  {
-    title: "Sân vận động Dĩ An",
-    text: "A perfect spot for private parties and gatherings.",
-    image: "https://playo.gumlet.io/IMPETUSBANGALOREFOOTBALLSTADIUM/BangaloreFootballStadiumImpetusSports12.jpg?mode=crop&crop=smart&h=200&width=450&q=75",
-  },
-  {
-    title: "Venue 6",
-    text: "An elegant banquet hall for any celebration.",
-    image: "https://playo.gumlet.io/BEFITBADMINTONCOURT/SkyArena1663676951821.jpeg?mode=crop&crop=smart&h=200&width=450&q=75",
-  },
-  {
-    title: "Venue 7",
-    text: "A perfect spot for private parties and gatherings.",
-    image: "https://playo.gumlet.io/16FEATHERBADMINTONACADEMY20221227122415918727/16FeatherBadmintonAcademy1672143979291.jpeg?mode=crop&crop=smart&h=200&width=450&q=75",
-  },
-  {
-    title: "Venue 8",
-    text: "An elegant banquet hall for any celebration.",
-    image: "https://playo.gumlet.io/GAMEONTERRACEFOOTBALLANDCRICKET/ChathurbhujaBadmintonAcademy1681290569631.jpeg?mode=crop&crop=smart&h=200&width=450&q=75",
-  },
-];
 
 // Hàm chia array thành nhóm nhỏ (mỗi nhóm 3 card trên 1 slide)
 const chunkArray = (arr, size) => {
@@ -66,7 +21,8 @@ const chunkArray = (arr, size) => {
 };
 
 function BookVenuesCarousel() {
-  const chunkedItems = chunkArray(items, 4); // Hiển thị 3 card trên mỗi slide
+  const [venues, setVenues] = useState([]); 
+  const chunkedItems = chunkArray(venues, 4); // Hiển thị 3 card trên mỗi slide
   const carouselRef = useRef(null); // Dùng useRef để điều khiển Carousel
   const [activeIndex, setActiveIndex] = useState(0); // Theo dõi chỉ mục hiện tại
   const navigate = useNavigate();
@@ -85,6 +41,19 @@ function BookVenuesCarousel() {
     if (activeIndex < chunkedItems.length - 1) {
       carouselRef.current.next();
     }
+  };
+
+  useEffect(() => {
+    const fetchVenues = async () => {
+      const data = await getAllVenues(); // Gọi API
+      if (data) setVenues(data); // Cập nhật state
+      // console.log("venues",data);
+      
+    };
+    fetchVenues();
+  }, []);
+  const handleClickVenue = (item) => {
+    navigate(`/detail-venues/${item.id}`, { state: { venue: item } });
   };
   return (
     <div>
@@ -114,6 +83,7 @@ function BookVenuesCarousel() {
               {group.map((item, idx) => (
                 <BsCol md={3} key={idx}>
                   <BsCard
+                   onClick={() => handleClickVenue(item)}
                     className="m-2"
                     style={{
                       borderRadius: "12px",
@@ -142,8 +112,8 @@ function BookVenuesCarousel() {
                       />
                     </div>
                     <BsCard.Body>
-                      <BsCard.Title>{item.title}</BsCard.Title>
-                      <BsCard.Text>{item.text}</BsCard.Text>
+                      <BsCard.Title>{item.name}</BsCard.Title>
+                      <BsCard.Text>{item.location}</BsCard.Text>
                     </BsCard.Body>
                   </BsCard>
                 </BsCol>
