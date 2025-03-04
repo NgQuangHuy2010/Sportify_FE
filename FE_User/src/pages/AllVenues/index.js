@@ -9,9 +9,6 @@ const cx = classNames.bind(styles);
 const { Meta } = Card;
 const { Search } = Input;
 
-
-
-
 const sports = [
   { value: "bong-da", label: "Bóng đá" },
   { value: "bong-ro", label: "Bóng rổ" },
@@ -24,8 +21,7 @@ function AllVenues() {
   const [selectedSports, setSelectedSports] = useState([]);
   const [data, setData] = useState([]);
   const navigate = useNavigate();
-  const defaultImage = "https://playo.gumlet.io/BTSTURFCLUB20240531052641675463/BTSTurfClub1717174005529.jpg?mode=crop&crop=smart&h=200&width=450&q=40&format=webp";
-  const iconSport ="https://img.icons8.com/emoji/48/soccer-ball-emoji.png";
+
   useEffect(() => {
     const fetchVenues = async () => {
       const res = await getAllVenues();
@@ -48,9 +44,7 @@ function AllVenues() {
     <div className="p-5">
       <div className="d-flex justify-content-between p-4">
         <div>
-          <h2 className="fw-bold">
-           Tất cả sân 
-          </h2>
+          <h2 className="fw-bold">Tất cả sân</h2>
         </div>
         <div>
           <Search
@@ -110,7 +104,8 @@ function AllVenues() {
                 cover={
                   <img
                     alt={item.title}
-                    src={item.image || defaultImage}
+                    src={`${process.env.REACT_APP_PATH_IMAGE}sport-center/${item?.image}`}
+                    style={{ width: "400px" , height:"200px"}}
                     className={cx("img-profile")}
                   />
                 }
@@ -124,11 +119,7 @@ function AllVenues() {
                   description={item.description}
                 />
                 <div className="d-flex justify-content-start mt-4">
-                  <img
-                    src={item.sport || iconSport}
-                    alt="sport icon"
-                    style={{ width: 24, height: 24 }}
-                  />
+                  
                 </div>
               </Card>
             </Col>

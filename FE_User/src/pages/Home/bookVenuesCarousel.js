@@ -107,7 +107,7 @@ function BookVenuesCarousel() {
                           borderRadius: "15px",
                           objectFit: "cover",
                         }}
-                        src={item.image}
+                        src={`${process.env.REACT_APP_PATH_IMAGE}sport-center/${item?.image}`}
                         alt={item.title}
                       />
                     </div>
