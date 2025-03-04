@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { Button } from "antd";
+import { Button, Descriptions, Card } from "antd";
 import BookingModal from "./booking";
 
 function VenuesDetails() {
   const location = useLocation();
   const venue = location.state?.venue;
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const description = JSON.parse(venue.description);
   return (
     <>
       <div className="container">
@@ -14,9 +15,40 @@ function VenuesDetails() {
           <div className="col-6">
             <h1 className="fw-bold my-5">{venue.name}</h1>
             <img
+              style={{ width: "700px", height: "400px" }}
               alt="hâha"
-              src="https://playo.gumlet.io/DEPOT18SPORTS20250202081042972914/Depot18Sports1738672756586.jpg?w=700&format=webp&q=30&overlay=https://playo-website.gumlet.io/playo-website-v2/logos-icons/playo-logo.png&overlay_width_pct=0.2&overlay_height_pct=1&overlay_position=bottomright"
+              src={`${process.env.REACT_APP_PATH_IMAGE}sport-center/${venue?.image}`}
             />
+            <Card bordered className="w-full shadow-md " style={{border:"none"}}>
+              <Descriptions
+                title="Mô tả về sân"
+                column={1}
+                bordered
+                size="middle"
+              >
+                <Descriptions.Item label="Kích thước">
+                  {description.size}
+                </Descriptions.Item>
+                <Descriptions.Item label="Loại sân">
+                  {description.grass}
+                </Descriptions.Item>
+                <Descriptions.Item label="Loại đèn">
+                  {description.lights}
+                </Descriptions.Item>
+                <Descriptions.Item label="Thoát nước">
+                  {description.drainage}
+                </Descriptions.Item>
+                <Descriptions.Item label="Khán đài">
+                  {description.stands}
+                </Descriptions.Item>
+                <Descriptions.Item label="Chất lượng lưới">
+                  {description.nets}
+                </Descriptions.Item>
+                <Descriptions.Item label="Số sân con">
+                  {description.sub_fields}
+                </Descriptions.Item>
+              </Descriptions>
+            </Card>
           </div>
           <div
             className="col-6 d-flex flex-column align-items-center"
@@ -33,7 +65,7 @@ function VenuesDetails() {
               style={{ height: "max-content" }}
               onClick={() => setIsModalOpen(true)}
             >
-             Đặt ngay
+              Đặt ngay
             </Button>
             <div
               style={{
@@ -62,7 +94,7 @@ function VenuesDetails() {
                   fontSize: "1.4rem",
                 }}
               >
-                5:00 AM - 12:00 AM
+                {venue.open_door}
               </div>
             </div>
             <div
