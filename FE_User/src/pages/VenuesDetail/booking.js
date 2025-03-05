@@ -8,6 +8,7 @@ import {
   Select,
   Button,
   message,
+  Radio,
 } from "antd";
 import { useForm, Controller } from "react-hook-form";
 import {
@@ -16,12 +17,15 @@ import {
   postBookedSlots,
 } from "~/services/venues";
 import { infoUser } from "~/services/infoUser";
+import { getTimeSlot } from "~/services/timeSlotSport";
 const BookingModal = ({ visible, onClose, venue }) => {
   const { control, handleSubmit, reset, setError, watch, setValue } = useForm();
   const [sportsFields, setSportsFields] = useState([]);
   const [bookedSlots, setBookedSlots] = useState([]);
   const [user, setUser] = useState([]);
+  const [timeSlots, setTimeSlots] = useState([]);
   const [selectedFieldSport, setSelectedFieldSport] = useState(null);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   // /////////////////
   const selectedField = watch("sportsField");
   const selectedDate = watch("date");
@@ -56,89 +60,39 @@ const BookingModal = ({ visible, onClose, venue }) => {
     }
   }, [selectedField, selectedDate]);
 
-  const getDisabledStartHours = () => {
-    const bookedRanges = bookedSlots.map((slot) => ({
-      start: new Date(`1970-01-01T${slot.startTime}`).getHours(),
-      end: new Date(`1970-01-01T${slot.endTime}`).getHours(),
-    }));
-
-    const disabledHours = new Set([0, 1, 2, 3, 4, 23]); // Chặn giờ ngoài 05:00 - 23:00
-
-    bookedRanges.forEach(({ start, end }) => {
-      for (let i = start; i < end; i++) {
-        disabledHours.add(i); // Chặn tất cả giờ đã có người đặt
-      }
-    });
-
-    return [...disabledHours];
-  };
-
-  const getDisabledEndHours = (startTime) => {
-    if (!startTime) return [];
-    const startHour = startTime.hour();
-    const bookedRanges = bookedSlots.map((slot) => ({
-      start: new Date(`1970-01-01T${slot.startTime}`).getHours(),
-      end: new Date(`1970-01-01T${slot.endTime}`).getHours(),
-    }));
-
-    const disabledHours = new Set([0, 1, 2, 3, 4, 23]);
-
-    // Chặn tất cả giờ <= startHour
-    for (let i = 0; i <= startHour; i++) {
-      disabledHours.add(i);
-    }
-    // Xác định giờ kết thúc hợp lệ gần nhất
-    let maxAvailableEnd = 23; // Mặc định có thể đặt đến cuối ngày
-    for (let { start, end } of bookedRanges) {
-      if (startHour < start) {
-        maxAvailableEnd = Math.min(maxAvailableEnd, start); // Giờ trống tiếp theo
-      } else if (startHour >= start && startHour < end) {
-        maxAvailableEnd = end; // Nếu startHour đã bị đặt, chỉ có thể đặt đến end
-      }
-    }
-    // Chỉ chặn giờ **sau** maxAvailableEnd, nhưng vẫn giữ maxAvailableEnd là hợp lệ
-    for (let i = maxAvailableEnd + 1; i <= 23; i++) {
-      disabledHours.add(i);
-    }
-    return [...disabledHours];
-  };
-
   useEffect(() => {
     // Khi startTime thay đổi, reset lại endTime về null hoặc giá trị hợp lệ đầu tiên
     setValue("endTime", null);
   }, [selectedStartTime, setValue]);
 
-  const optionsVenuesField = sportsFields.map((field) => ({
-    label: field.name,
-    value: field.id, // Dùng ID để nhận diện sân
-    fieldData: field, // Lưu toàn bộ object để dễ lấy thông tin
-  }));
+  const onSubmit = async () => {
 
-  const onSubmit = async (data) => {
-    if (dayjs(data.endTime).isBefore(dayjs(data.startTime))) {
-      setError("endTime", {
-        type: "manual",
-        message: "End time must be after start time",
-      });
+    if (!selectedTimeSlot) {
+      console.warn("Chưa chọn khung giờ!");
       return;
     }
-
+    const selectedSlot = timeSlots.find(slot => slot.id === selectedTimeSlot);
+    
     // Chuẩn bị dữ liệu gửi API
     const payload = {
-      userId: user.userId,
-      sportFieldId: data.sportsField,
-      bookingDate: data.date.format("YYYY-MM-DD"),
-      startTime: data.startTime.format("HH:mm"),
-      endTime: data.endTime.format("HH:mm"),
+      userId: user.userId, 
+      sportFieldId: selectedFieldSport.id, 
+      bookingDate: selectedSlot.date, // 🔹 Đúng format YYYY-MM-DD từ API
+      startTime: selectedSlot.startTime, // 🔹 Định dạng "HH:mm"
+      endTime: selectedSlot.endTime, // 🔹 Định dạng "HH:mm"
+      timeSlotId: selectedSlot.id, // 🔹 Định dạng "HH:mm"
       status: "PENDING",
       notes: "string",
     };
-
+    console.log("🚀 Dữ liệu gửi đi:", payload);
     try {
       const response = await postBookedSlots(payload);
       // console.log("Booking Success:", response);
       message.success("Đặt sân thành công!");
-      reset(); // Reset form sau khi gửi thành công
+      reset(); 
+      setSelectedFieldSport("");
+      setTimeSlots([]);
+      setSelectedTimeSlot(null);
       onClose(); // Đóng modal
     } catch (error) {
       console.error("Booking Failed:", error);
@@ -146,17 +100,14 @@ const BookingModal = ({ visible, onClose, venue }) => {
     }
   };
 
-  const DisabledDate = (current) => {
-    const today = dayjs().startOf("day");
-    const sevenDaysLater = today.add(7, "day");
-    return (
-      current && (current.isBefore(today) || current.isAfter(sevenDaysLater))
-    );
-  };
   const handleClose = () => {
     reset();
+    setSelectedFieldSport("");
+    setTimeSlots([]);
+    setSelectedTimeSlot(null);
     onClose();
   };
+  //lấy thông tin user
   useEffect(() => {
     const token = localStorage.getItem("token-login");
 
@@ -168,12 +119,23 @@ const BookingModal = ({ visible, onClose, venue }) => {
   }, [localStorage.getItem("token-login")]);
 
   const handleFieldChange = (value) => {
-    const field = sportsFields.find((f) => f.id === value); // Tìm object sân
-    setSelectedFieldSport(field); // Lưu cả object sân
-    setValue("sportsField", field); // Cập nhật form với object thay vì chỉ ID
-    // console.log("Selected Field:", field); // Kiểm tra xem có đúng không
+    const field = sportsFields.find((f) => f.id === value);
+    setSelectedFieldSport(field);
+    setValue("sportsField", field);
+    //  console.log("Selected Field:", field);
   };
 
+  //get time slot
+  useEffect(() => {
+    if (selectedFieldSport) {
+      getTimeSlot(selectedFieldSport.id).then((res) => {
+        if (res) {
+          setTimeSlots(res); // Lưu dữ liệu vào state
+        }
+      });
+    }
+  }, [selectedFieldSport]);
+ console.log("select Time Slots:", selectedTimeSlot);
   return (
     <Modal
       open={visible}
@@ -185,12 +147,8 @@ const BookingModal = ({ visible, onClose, venue }) => {
         </h3>
       }
     >
-      <Form
-        layout="vertical"
-        onFinish={handleSubmit(onSubmit)}
-        style={{ padding: "20px" }}
-      >
-        {/* Sports Field */}
+      <Form layout="vertical" style={{ padding: "20px" }} onFinish={onSubmit}>
+        {/* Sports Field Selection */}
         <Form.Item label="Chọn sân">
           <Controller
             name="sportsField"
@@ -205,16 +163,17 @@ const BookingModal = ({ visible, onClose, venue }) => {
                   label: field.name,
                   value: field.id,
                 }))}
-                value={watch("sportsField")} // 🔹 Đồng bộ lại giá trị đã chọn
+                value={watch("sportsField")}
                 onChange={(value) => {
                   handleFieldChange(value);
-                  field.onChange(value); // 🔹 Đảm bảo form cũng cập nhật
+                  field.onChange(value);
                 }}
               />
             )}
           />
         </Form.Item>
 
+        {/* Hiển thị thông tin sân
         {selectedFieldSport && (
           <div
             style={{
@@ -233,88 +192,57 @@ const BookingModal = ({ visible, onClose, venue }) => {
             <p>
               <b>Kích thước:</b> {selectedFieldSport.size}
             </p>
-            <p>
-              <b>Số người tối đa:</b> {selectedFieldSport.maxPlayers}
-            </p>
-            <p>
-              <b>Số người dự bị:</b> {selectedFieldSport.subPlayers}
-            </p>
-            <p>
-              <b>Giờ bắt đầu:</b> {selectedFieldSport.startTime}
-            </p>
-            <p>
-              <b>Giờ kết thúc:</b> {selectedFieldSport.endTime}
-            </p>
-            <p>
-              <b>Ngày:</b>{" "}
-              {selectedFieldSport.date
-                ? dayjs(selectedFieldSport.date).format("DD/MM/YYYY")
-                : "Chưa chọn"}
-            </p>
           </div>
+        )} */}
+
+        {/* Hiển thị Time Slots */}
+        {timeSlots.length > 0 && (
+          <Form.Item label="Chọn khung giờ">
+            <Radio.Group
+              value={selectedTimeSlot}
+              onChange={(e) => setSelectedTimeSlot(e.target.value)}
+              style={{ width: "100%" }}
+            >
+              {timeSlots.map((slot) => (
+                <Radio.Button
+                  key={slot.id}
+                  value={slot.id}
+                  style={{
+                    display: "block",
+                    height: "auto",
+                    width: "100%",
+                    textAlign: "left",
+                    padding: "10px",
+                    marginBottom: "10px",
+                  }}
+                >
+                  <div>
+                    <p>
+                      <b>Thời gian:</b> {slot.startTime} - {slot.endTime}
+                    </p>
+                    <p>
+                      <b>Ngày:</b> {slot.date}
+                    </p>
+                    <p>
+                      <b>Tổng số người chơi chính:</b> {slot.maxPlayers} (Số người dự bị:{" "}
+                      {slot.subPlayers})
+                    </p>
+                    <p>
+                      <b>Số người đã tham gia:</b>  <b style={{color:"red"}}>5</b>
+                    </p>
+                  </div>
+                </Radio.Button>
+              ))}
+            </Radio.Group>
+          </Form.Item>
         )}
-        {/* Date */}
-        <Form.Item label="Ngày">
-          <Controller
-            name="date"
-            disabled={!watch("sportsField")}
-            control={control}
-            rules={{ required: "Please select a date!" }}
-            render={({ field }) => (
-              <DatePicker
-                {...field}
-                style={{ width: "100%" }}
-                disabledDate={DisabledDate}
-                onChange={(date) => setValue("date", date)}
-              />
-            )}
-          />
-        </Form.Item>
-        {/* Start Time */}
-        <Form.Item label="Start Time">
-          <Controller
-            name="startTime"
-            disabled={!watch("sportsField") || !watch("date")}
-            control={control}
-            rules={{ required: "Please select start time!" }}
-            render={({ field }) => (
-              <TimePicker
-                {...field}
-                format="HH:mm"
-                style={{ width: "100%" }}
-                disabledTime={() => ({
-                  disabledHours: getDisabledStartHours,
-                  disabledMinutes: () =>
-                    Array.from({ length: 60 }, (_, i) => (i !== 0 ? i : null)),
-                })}
-              />
-            )}
-          />
-        </Form.Item>
 
-        {/* End Time */}
-        <Form.Item label="End Time">
-          <Controller
-            name="endTime"
-            control={control}
-            rules={{ required: "Please select end time!" }}
-            disabled={!watch("startTime")}
-            render={({ field }) => (
-              <TimePicker
-                {...field}
-                format="HH:mm"
-                style={{ width: "100%" }}
-                disabledTime={() => ({
-                  disabledHours: () => getDisabledEndHours(selectedStartTime),
-                  disabledMinutes: () =>
-                    Array.from({ length: 60 }, (_, i) => (i !== 0 ? i : null)),
-                })}
-              />
-            )}
-          />
-        </Form.Item>
-
-        <Button type="primary" block htmlType="submit">
+        <Button
+          type="primary"
+          block
+          htmlType="submit"
+          disabled={!selectedTimeSlot}
+        >
           Tham gia ngay
         </Button>
       </Form>
