@@ -8,7 +8,7 @@ class UserService {
 
   UserService({required this.baseUrl});
 
-  Future<List<ListUser>> fetchUsers(String token) async {
+  Future<List<ListUser>> fetchUsersToExplore(String token) async {
     final response = await http.get(
       Uri.parse('$baseUrl$GET_USERS_EXPLORE'),
       headers: {
