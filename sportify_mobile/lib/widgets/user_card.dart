@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import '../utils/constants.dart';
 
 class UserCard extends StatelessWidget {
-  final String avatarUrl;
+  final String avatar;
   final String name;
   final List<Map<String, String>>
       favoriteSports; // List of {id, sportName, imageSport}
 
   const UserCard({
     super.key,
-    required this.avatarUrl,
+    required this.avatar,
     required this.name,
     required this.favoriteSports,
   });
@@ -26,10 +26,10 @@ class UserCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // CircleAvatar(
-            //   radius: 50,
-            //   backgroundImage: NetworkImage(avatarUrl),
-            // ),
+            CircleAvatar(
+              radius: 50,
+              backgroundImage: NetworkImage('$BASE_PATH_IMAGE/avatar/$avatar'),
+            ),
             const SizedBox(height: 12),
             Text(
               name,

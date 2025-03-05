@@ -31,9 +31,9 @@ class _HomeScreenState extends State<HomeScreen> {
         _token = token;
         _pages = [
           ExploreScreen(token: _token!),
-          const Center(child: Text('Message Page')),
+          MessageScreen(token: _token!),
           const Center(child: Text('Notification Page')),
-          const Center(child: Text('Account Page')),
+          AccountScreen(),
         ];
       });
       print('Home Token: $_token');

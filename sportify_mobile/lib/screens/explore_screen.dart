@@ -21,7 +21,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
   @override
   void initState() {
     super.initState();
-    futureUsers = userService.fetchUsers(widget.token);
+    futureUsers = userService.fetchUsersToExplore(widget.token);
   }
 
   @override
@@ -42,7 +42,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
               itemBuilder: (context, index) {
                 final user = users[index];
                 return UserCard(
-                  avatarUrl: user.avatar,
+                  avatar: user.avatar,
                   name: '${user.firstname} ${user.lastname}',
                   favoriteSports: user.sports
                       .map((sport) => {
