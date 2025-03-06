@@ -51,6 +51,7 @@ export const getBookedSlots = async (sportFieldId, bookingDate) => {
   };
   
 
+  //check xem bao nhiu ng đã đặt
   export const getBookingInfo = async (sportFieldId, timeSlotId, bookingDate) => {
     // console.log(bookingDate);
     
@@ -65,3 +66,13 @@ export const getBookedSlots = async (sportFieldId, bookingDate) => {
     }
   };
   
+
+// hủy đặt
+export const cancelBookingAPI = async (timeSlotId,userId) => {
+  try {
+    const res = await request.deleteById(`/bookings/${timeSlotId}/cancel?userId=${userId}`);
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};

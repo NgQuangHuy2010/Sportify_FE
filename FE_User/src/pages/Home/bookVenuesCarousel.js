@@ -47,7 +47,7 @@ function BookVenuesCarousel() {
     const fetchVenues = async () => {
       const data = await getAllVenues(); // Gọi API
       if (data) setVenues(data); // Cập nhật state
-      // console.log("venues",data);
+       console.log("venues",data);
       
     };
     fetchVenues();
@@ -81,42 +81,63 @@ function BookVenuesCarousel() {
           <Carousel.Item key={index}>
             <BsRow className="d-flex justify-content-center">
               {group.map((item, idx) => (
-                <BsCol md={3} key={idx}>
-                  <BsCard
-                   onClick={() => handleClickVenue(item)}
-                    className="m-2"
-                    style={{
-                      borderRadius: "12px",
-                      overflow: "hidden",
-                      boxShadow: "0px 8px 10px rgba(0, 0, 0, 0.1)",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <div
-                      style={{
-                        height: "150px",
-                        overflow: "hidden",
-                        borderRadius: "12px 12px 0 0",
-                      }}
-                    >
-                      <BsCard.Img
-                        variant="top"
-                        style={{
-                          height: "200px",
-                          padding: "10px",
-                          borderRadius: "15px",
-                          objectFit: "cover",
-                        }}
-                        src={`${process.env.REACT_APP_PATH_IMAGE}sport-center/${item?.image}`}
-                        alt={item.title}
-                      />
-                    </div>
-                    <BsCard.Body>
-                      <BsCard.Title>{item.name}</BsCard.Title>
-                      <BsCard.Text>{item.location}</BsCard.Text>
-                    </BsCard.Body>
-                  </BsCard>
-                </BsCol>
+            <BsCol md={3} key={idx}>
+            <BsCard
+              onClick={() => handleClickVenue(item)}
+              className="m-2 position-relative"
+              style={{
+                borderRadius: "12px",
+                overflow: "hidden",
+                boxShadow: "0px 8px 10px rgba(0, 0, 0, 0.1)",
+                cursor: "pointer",
+              }}
+            >
+              {/* Hiển thị nhãn "Còn trống" */}
+              {item.hasAvailableSlots && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "10px",
+                    right: "10px",
+                    backgroundColor: "#28a745", // Màu xanh lá (Bootstrap success)
+                    color: "white",
+                    padding: "5px 10px",
+                    borderRadius: "12px",
+                    fontSize: "12px",
+                    fontWeight: "bold",
+                    boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.2)",
+                  }}
+                >
+                  Còn trống
+                </div>
+              )}
+          
+              <div
+                style={{
+                  height: "150px",
+                  overflow: "hidden",
+                  borderRadius: "12px 12px 0 0",
+                }}
+              >
+                <BsCard.Img
+                  variant="top"
+                  style={{
+                    height: "200px",
+                    padding: "10px",
+                    borderRadius: "15px",
+                    objectFit: "cover",
+                  }}
+                  src={`${process.env.REACT_APP_PATH_IMAGE}sport-center/${item?.image}`}
+                  alt={item.title}
+                />
+              </div>
+              <BsCard.Body>
+                <BsCard.Title>{item.name}</BsCard.Title>
+                <BsCard.Text>{item.location}</BsCard.Text>
+              </BsCard.Body>
+            </BsCard>
+          </BsCol>
+          
               ))}
             </BsRow>
           </Carousel.Item>

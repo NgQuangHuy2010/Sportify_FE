@@ -16,4 +16,11 @@ export const post = async (url, data, config = {}) => {
 export const put = async (url, data, config = {}) => {
     return await httpRequest.put(url, data, config);
 };
+
+export const patch = async (url, data, config = {}) => {
+    return await httpRequest.patch(url, data, config);
+};
+export const deleteById = async (url, data, config = {}) => {
+    return await httpRequest.delete(url, data, config);
+};
 export default httpRequest
