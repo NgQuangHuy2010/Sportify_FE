@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sportify_mobile/screens/account_screen.dart';
 import 'package:sportify_mobile/screens/explore_screen.dart';
 import 'package:sportify_mobile/screens/message_screen.dart';
+import 'package:sportify_mobile/screens/notification_screen.dart';
 import 'package:sportify_mobile/services/auth_service.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -32,8 +33,8 @@ class _HomeScreenState extends State<HomeScreen> {
         _pages = [
           ExploreScreen(token: _token!),
           MessageScreen(token: _token!),
-          const Center(child: Text('Notification Page')),
-          AccountScreen(),
+          NotificationScreen(token: _token!),
+          AccountScreen(token: _token!),
         ];
       });
       print('Home Token: $_token');

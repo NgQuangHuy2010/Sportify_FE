@@ -1,4 +1,3 @@
-// lib/screens/explore_screen.dart
 import 'package:flutter/material.dart';
 import 'package:sportify_mobile/models/listUser.dart';
 import 'package:sportify_mobile/services/user_service.dart';
@@ -42,6 +41,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
               itemBuilder: (context, index) {
                 final user = users[index];
                 return UserCard(
+                  token: widget.token,
+                  receiverId: user.userId,
                   avatar: user.avatar,
                   name: '${user.firstname} ${user.lastname}',
                   favoriteSports: user.sports
