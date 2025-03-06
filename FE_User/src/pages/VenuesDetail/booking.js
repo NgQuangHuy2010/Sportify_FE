@@ -159,19 +159,19 @@ const BookingModal = ({ visible, onClose, venue }) => {
     >
       <Form layout="vertical" onFinish={handleSubmit(onSubmit)} style={{padding:"20px"}}>
         {/* Sports Field */}
-        <Form.Item label="Sports Field">
+        <Form.Item label="Chọn sân">
           <Controller
             name="sportsField"
             control={control}
             rules={{ required: "Please select a field!" }}
             render={({ field }) => (
-              <Select {...field} placeholder="----Choose----" style={{ width: "100%" }} options={optionsVenuesField}  onChange={(value) => setValue("sportsField", value)}/>
+              <Select {...field} placeholder="----Chọn----" style={{ width: "100%" }} options={optionsVenuesField}  onChange={(value) => setValue("sportsField", value)}/>
             )}
           />
         </Form.Item>
 
         {/* Date */}
-        <Form.Item label="Date">
+        <Form.Item label="Ngày">
           <Controller
             name="date"
             disabled={!watch("sportsField")} 
@@ -219,7 +219,7 @@ const BookingModal = ({ visible, onClose, venue }) => {
         </Form.Item>
 
         <Button type="primary" block htmlType="submit">
-          Make a booking
+         Tham gia ngay
         </Button>
       </Form>
     </Modal>

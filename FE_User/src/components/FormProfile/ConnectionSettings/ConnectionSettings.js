@@ -119,7 +119,7 @@ function ConnectionSettings({ control, userInfo, setValue }) {
           )}
         />
       </Form.Item>
-      <ScheduleSport />
+      {/* <ScheduleSport /> */}
     </>
   );
 }
