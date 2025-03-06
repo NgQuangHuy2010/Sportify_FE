@@ -15,6 +15,7 @@ import {
   CCardHeader,
   CAvatar,
   CSpinner,
+  CFormInput,
 } from '@coreui/react'
 import { fetchUsersApi } from '../../apis/userapi'
 
@@ -24,29 +25,20 @@ const UserList = () => {
   const [loading, setLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
+  const [searchTerm, setSearchTerm] = useState('')
   const pageSize = 20
 
-  // Fetch dữ liệu từ API
-  // const fetchUsers = (page) => {
-  //   setLoading(true)
-  //   axios
-  //     .get(`http://localhost:8080/api/admin/user-profiles?page=${page}&size=${pageSize}`)
-  //     .then((response) => {
-  //       setUsers(response.data.content) // Giả sử API trả về response với field 'content'
-  //       setTotalPages(response.data.totalPages) // Giả sử API trả về tổng số trang
-  //       setLoading(false)
-  //     })
-  //     .catch((error) => {
-  //       console.error('Error fetching users:', error)
-  //       setLoading(false)
-  //     })
-  // }
-  const fetchUsers = (page, pageSize) => {
+  const fetchUsers = (page, search = '') => {
     setLoading(true)
-    fetchUsersApi(page, pageSize)
+    const apiUrl = search
+      ? `http://localhost:8080/api/admin/users/search?name=${search}&page=${page}&size=${pageSize}`
+      : `http://localhost:8080/api/admin/users?page=${page}&size=${pageSize}`
+
+    axios
+      .get(apiUrl)
       .then((response) => {
-        setUsers(response.data.content) // Xử lý dữ liệu người dùng
-        setTotalPages(response.data.totalPages) // Tổng số trang
+        setUsers(response.data.content)
+        setTotalPages(response.data.totalPages)
         setLoading(false)
       })
       .catch((error) => {
@@ -55,30 +47,45 @@ const UserList = () => {
       })
   }
 
-  // Gọi fetchUsers khi component render hoặc khi currentPage thay đổi
   useEffect(() => {
     fetchUsers(currentPage)
   }, [currentPage])
 
-  // Xử lý chuyển trang
   const handlePageClick = (event) => {
     setCurrentPage(event.selected)
   }
 
-  // Xử lý xem chi tiết
-  const handleViewDetail = (id) => {
-    navigate(`/user/detail/${id}`)
+  const handleSearch = () => {
+    setCurrentPage(0)
+    fetchUsers(0, searchTerm)
   }
 
-  // Xử lý chỉnh sửa
-  const handleEdit = (id) => {
-    navigate(`/user/edit/${id}`)
+  const toggleLock = (id) => {
+    axios
+      .patch(`http://localhost:8080/api/admin/users/${id}/toggle-lock`)
+      .then(() => {
+        fetchUsers(currentPage, searchTerm)
+      })
+      .catch((error) => {
+        console.error('Error toggling user lock:', error)
+      })
   }
 
   return (
     <CCard className="mt-4">
       <CCardHeader>
         <h5>User List</h5>
+        <div className="d-flex mt-2">
+          <CFormInput
+            type="text"
+            placeholder="Search by first name or last name"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <CButton color="primary" className="ms-2" onClick={handleSearch}>
+            Search
+          </CButton>
+        </div>
       </CCardHeader>
       <CCardBody>
         {loading ? (
@@ -100,7 +107,7 @@ const UserList = () => {
                 </CTableRow>
               </CTableHead>
               <CTableBody>
-                {users.map((user, index) => (
+                {users.map((user) => (
                   <CTableRow key={user.id}>
                     <CTableDataCell>{user.id}</CTableDataCell>
                     <CTableDataCell>
@@ -115,7 +122,7 @@ const UserList = () => {
                     <CTableDataCell>{user.phone}</CTableDataCell>
                     <CTableDataCell>{user.gender}</CTableDataCell>
                     <CTableDataCell>
-                      {user.isLocked ? (
+                      {user.locked ? (
                         <span className="text-danger">Locked</span>
                       ) : (
                         <span className="text-success">Active</span>
@@ -123,15 +130,11 @@ const UserList = () => {
                     </CTableDataCell>
                     <CTableDataCell>
                       <CButton
-                        color="info"
+                        color={user.locked ? 'success' : 'danger'}
                         size="sm"
-                        className="me-2"
-                        onClick={() => handleViewDetail(user.id)}
+                        onClick={() => toggleLock(user.id)}
                       >
-                        View Detail
-                      </CButton>
-                      <CButton color="warning" size="sm" onClick={() => handleEdit(user.id)}>
-                        Edit
+                        {user.locked ? 'Unlock' : 'Lock'}
                       </CButton>
                     </CTableDataCell>
                   </CTableRow>
@@ -139,7 +142,6 @@ const UserList = () => {
               </CTableBody>
             </CTable>
 
-            {/* Phân trang */}
             <ReactPaginate
               previousLabel={'Previous'}
               nextLabel={'Next'}
