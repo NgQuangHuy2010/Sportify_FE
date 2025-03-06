@@ -51,4 +51,17 @@ export const getBookedSlots = async (sportFieldId, bookingDate) => {
   };
   
 
+  export const getBookingInfo = async (sportFieldId, timeSlotId, bookingDate) => {
+    // console.log(bookingDate);
+    
+    try {
+      const res = await request.get(`bookings/info`, {
+        params: { sportFieldId, timeSlotId, bookingDate },
+      });
+      return res;
+    } catch (error) {
+      console.error("Lỗi lấy thông tin đặt sân:", error);
+      throw error;
+    }
+  };
   
