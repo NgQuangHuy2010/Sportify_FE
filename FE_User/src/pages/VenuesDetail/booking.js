@@ -15,6 +15,7 @@ import {
   getVenues_Sports_Fields,
   getBookedSlots,
   postBookedSlots,
+  getBookingInfo,
 } from "~/services/venues";
 import { infoUser } from "~/services/infoUser";
 import { getTimeSlot } from "~/services/timeSlotSport";
@@ -64,6 +65,28 @@ const BookingModal = ({ visible, onClose, venue }) => {
     // Khi startTime thay đổi, reset lại endTime về null hoặc giá trị hợp lệ đầu tiên
     setValue("endTime", null);
   }, [selectedStartTime, setValue]);
+
+
+  useEffect(() => {
+    if (!selectedTimeSlot || !timeSlots.length) {
+      console.warn("Không có khung giờ hợp lệ!");
+      return;
+    }
+  
+    const selectedSlotss = timeSlots.find(slot => slot.id === Number(selectedTimeSlot));
+  
+    if (selectedSlotss) {
+
+      console.log("all :", selectedSlotss);
+      console.log("bookingDate :", selectedSlotss.date);
+      console.log("sportFieldId:", selectedSlotss.sportsFieldId);
+      console.log("timeSlotId", selectedSlotss.id);
+
+    } else {
+      console.warn("⚠️ Không tìm thấy khung giờ!");
+    }
+  }, [selectedTimeSlot, timeSlots]);
+  
 
   const onSubmit = async () => {
 
@@ -118,12 +141,47 @@ const BookingModal = ({ visible, onClose, venue }) => {
     }
   }, [localStorage.getItem("token-login")]);
 
-  const handleFieldChange = (value) => {
+
+  //chọn sân 
+  const handleFieldChange = async (value) => {
     const field = sportsFields.find((f) => f.id === value);
     setSelectedFieldSport(field);
     setValue("sportsField", field);
-    //  console.log("Selected Field:", field);
+  
+    if (!field) return;
+  
+    try {
+      // 🟢 Gọi API lấy danh sách khung giờ của sân
+      const slots = await getTimeSlot(field.id);
+      console.log("📌 Danh sách khung giờ:", slots);
+  
+      // 🟢 Gọi API lấy số lượng đã đặt cho từng khung giờ
+      const updatedSlots = await Promise.all(
+        slots.map(async (slot) => {
+          try {
+            const bookingInfo = await getBookingInfo(field.id, slot.id, slot.date);
+            console.log("info booking",bookingInfo);
+            return {
+              ...slot,
+              bookedPlayers: bookingInfo?.bookedPlayers || 0,
+              availableSlots: bookingInfo?.availableSlots || slot.maxPlayers,
+              bookedUsers: bookingInfo?.bookedUsers || [],
+            };
+            
+          } catch (error) {
+            console.warn(`⚠️ Không lấy được thông tin cho khung giờ ${slot.id}:`, error);
+            return { ...slot, bookedPlayers: 0, availableSlots: slot.maxPlayers, bookedUsers: []  };
+          }
+        })
+      );
+      setTimeSlots(updatedSlots);
+    } catch (error) {
+      console.error("❌ Lỗi lấy thông tin đặt sân:", error);
+    }
   };
+  
+
+  
 
   //get time slot
   useEffect(() => {
@@ -135,7 +193,10 @@ const BookingModal = ({ visible, onClose, venue }) => {
       });
     }
   }, [selectedFieldSport]);
- console.log("select Time Slots:", selectedTimeSlot);
+
+
+
+
   return (
     <Modal
       open={visible}
@@ -173,40 +234,25 @@ const BookingModal = ({ visible, onClose, venue }) => {
           />
         </Form.Item>
 
-        {/* Hiển thị thông tin sân
-        {selectedFieldSport && (
-          <div
-            style={{
-              marginTop: "10px",
-              padding: "10px",
-              border: "1px solid #ddd",
-              borderRadius: "5px",
-            }}
-          >
-            <p>
-              <b>Sân:</b> {selectedFieldSport.name}
-            </p>
-            <p>
-              <b>Loại sân:</b> {selectedFieldSport.type}
-            </p>
-            <p>
-              <b>Kích thước:</b> {selectedFieldSport.size}
-            </p>
-          </div>
-        )} */}
-
         {/* Hiển thị Time Slots */}
         {timeSlots.length > 0 && (
           <Form.Item label="Chọn khung giờ">
-            <Radio.Group
-              value={selectedTimeSlot}
-              onChange={(e) => setSelectedTimeSlot(e.target.value)}
-              style={{ width: "100%" }}
-            >
-              {timeSlots.map((slot) => (
+          <Radio.Group
+            value={selectedTimeSlot}
+            onChange={(e) => setSelectedTimeSlot(e.target.value)}
+            style={{ width: "100%" }}
+          >
+            {timeSlots.map((slot) => {
+              const isUserBooked = user && (slot.bookedUsers ?? []).includes(user.userId); // 🛠 Fix lỗi khai báo biến
+              console.log(user);
+              
+        console.log(isUserBooked);
+        
+              return (
                 <Radio.Button
                   key={slot.id}
                   value={slot.id}
+                  disabled={isUserBooked} // 🔴 Disable nếu user đã đặt
                   style={{
                     display: "block",
                     height: "auto",
@@ -214,27 +260,23 @@ const BookingModal = ({ visible, onClose, venue }) => {
                     textAlign: "left",
                     padding: "10px",
                     marginBottom: "10px",
+                    backgroundColor: isUserBooked ? "#f8d7da" : "white", // 🟥 Đổi màu nếu đã đặt
                   }}
                 >
                   <div>
-                    <p>
-                      <b>Thời gian:</b> {slot.startTime} - {slot.endTime}
-                    </p>
-                    <p>
-                      <b>Ngày:</b> {slot.date}
-                    </p>
-                    <p>
-                      <b>Tổng số người chơi chính:</b> {slot.maxPlayers} (Số người dự bị:{" "}
-                      {slot.subPlayers})
-                    </p>
-                    <p>
-                      <b>Số người đã tham gia:</b>  <b style={{color:"red"}}>5</b>
-                    </p>
+                    <p><b>Thời gian:</b> {slot.startTime} - {slot.endTime}</p>
+                    <p><b>Ngày:</b> {slot.date}</p>
+                    <p><b>Tổng số người chơi chính:</b> {slot.maxPlayers}</p>
+                    <p><b>Số người đã tham gia:</b> <b style={{ color: "red" }}>{slot.bookedPlayers ?? 0}</b></p>
+                    <p><b>Số người còn thiếu:</b> <b style={{ color: "red" }}>{slot.availableSlots ?? 0}</b></p>
+                    {isUserBooked && <p style={{ color: "red" }}>⚠️ Bạn đã đặt khung giờ này!</p>}
                   </div>
                 </Radio.Button>
-              ))}
-            </Radio.Group>
-          </Form.Item>
+              );
+            })}
+          </Radio.Group>
+        </Form.Item>
+        
         )}
 
         <Button
