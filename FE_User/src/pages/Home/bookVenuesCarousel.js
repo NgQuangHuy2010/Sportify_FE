@@ -11,7 +11,6 @@ import config from "~/config";
 import { useNavigate } from "react-router-dom";
 import { getAllVenues } from "~/services/venues";
 
-
 // Hàm chia array thành nhóm nhỏ (mỗi nhóm 3 card trên 1 slide)
 const chunkArray = (arr, size) => {
   return arr.reduce(
@@ -21,7 +20,7 @@ const chunkArray = (arr, size) => {
 };
 
 function BookVenuesCarousel() {
-  const [venues, setVenues] = useState([]); 
+  const [venues, setVenues] = useState([]);
   const chunkedItems = chunkArray(venues, 4); // Hiển thị 3 card trên mỗi slide
   const carouselRef = useRef(null); // Dùng useRef để điều khiển Carousel
   const [activeIndex, setActiveIndex] = useState(0); // Theo dõi chỉ mục hiện tại
@@ -47,8 +46,7 @@ function BookVenuesCarousel() {
     const fetchVenues = async () => {
       const data = await getAllVenues(); // Gọi API
       if (data) setVenues(data); // Cập nhật state
-       console.log("venues",data);
-      
+      // console.log("venues", data);
     };
     fetchVenues();
   }, []);
@@ -62,14 +60,19 @@ function BookVenuesCarousel() {
           <h2 className="fw-bold">Đặt chỗ địa điểm</h2>
         </div>
         <div>
-          <button className="btn" onClick={() => navigate(config.routes.allVenues)}>
+          <button
+            className="btn"
+            onClick={() => navigate(config.routes.allVenues)}
+          >
             <h3 className="fw-bold" style={{ color: "rgb(25, 138, 204)" }}>
-            XEM TẤT CẢ CÁC ĐỊA ĐIỂM <i className="fa-solid fa-chevron-right"></i>
+              XEM TẤT CẢ CÁC ĐỊA ĐIỂM{" "}
+              <i className="fa-solid fa-chevron-right"></i>
             </h3>
           </button>
         </div>
       </div>
       <Carousel
+        interval={null}
         className="p-4"
         ref={carouselRef}
         indicators={false}
@@ -81,63 +84,62 @@ function BookVenuesCarousel() {
           <Carousel.Item key={index}>
             <BsRow className="d-flex justify-content-center">
               {group.map((item, idx) => (
-            <BsCol md={3} key={idx}>
-            <BsCard
-              onClick={() => handleClickVenue(item)}
-              className="m-2 position-relative"
-              style={{
-                borderRadius: "12px",
-                overflow: "hidden",
-                boxShadow: "0px 8px 10px rgba(0, 0, 0, 0.1)",
-                cursor: "pointer",
-              }}
-            >
-              {/* Hiển thị nhãn "Còn trống" */}
-              {item.hasAvailableSlots && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "10px",
-                    right: "10px",
-                    backgroundColor: "#28a745", // Màu xanh lá (Bootstrap success)
-                    color: "white",
-                    padding: "5px 10px",
-                    borderRadius: "12px",
-                    fontSize: "12px",
-                    fontWeight: "bold",
-                    boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.2)",
-                  }}
-                >
-                  Còn trống
-                </div>
-              )}
-          
-              <div
-                style={{
-                  height: "150px",
-                  overflow: "hidden",
-                  borderRadius: "12px 12px 0 0",
-                }}
-              >
-                <BsCard.Img
-                  variant="top"
-                  style={{
-                    height: "200px",
-                    padding: "10px",
-                    borderRadius: "15px",
-                    objectFit: "cover",
-                  }}
-                  src={`${process.env.REACT_APP_PATH_IMAGE}sport-center/${item?.image}`}
-                  alt={item.title}
-                />
-              </div>
-              <BsCard.Body>
-                <BsCard.Title>{item.name}</BsCard.Title>
-                <BsCard.Text>{item.location}</BsCard.Text>
-              </BsCard.Body>
-            </BsCard>
-          </BsCol>
-          
+                <BsCol md={3} key={idx}>
+                  <BsCard
+                    onClick={() => handleClickVenue(item)}
+                    className="m-2 position-relative"
+                    style={{
+                      borderRadius: "12px",
+                      overflow: "hidden",
+                      boxShadow: "0px 8px 10px rgba(0, 0, 0, 0.1)",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {/* Hiển thị nhãn "Còn trống" */}
+                    {item.hasAvailableSlots && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: "10px",
+                          right: "10px",
+                          backgroundColor: "#28a745", // Màu xanh lá (Bootstrap success)
+                          color: "white",
+                          padding: "5px 10px",
+                          borderRadius: "12px",
+                          fontSize: "12px",
+                          fontWeight: "bold",
+                          boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.2)",
+                        }}
+                      >
+                        Còn trống
+                      </div>
+                    )}
+
+                    <div
+                      style={{
+                        height: "150px",
+                        overflow: "hidden",
+                        borderRadius: "12px 12px 0 0",
+                      }}
+                    >
+                      <BsCard.Img
+                        variant="top"
+                        style={{
+                          height: "200px",
+                          padding: "10px",
+                          borderRadius: "15px",
+                          objectFit: "cover",
+                        }}
+                        src={`${process.env.REACT_APP_PATH_IMAGE}sport-center/${item?.image}`}
+                        alt={item.title}
+                      />
+                    </div>
+                    <BsCard.Body>
+                      <BsCard.Title>{item.name}</BsCard.Title>
+                      <BsCard.Text>{item.location}</BsCard.Text>
+                    </BsCard.Body>
+                  </BsCard>
+                </BsCol>
               ))}
             </BsRow>
           </Carousel.Item>

@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import {
   Modal,
-  TimePicker,
+
   Form,
-  DatePicker,
+
   Select,
   Button,
   message,
@@ -109,7 +109,7 @@ const BookingModal = ({ visible, onClose, venue }) => {
     };
     console.log("🚀 Dữ liệu gửi đi:", payload);
     try {
-      const response = await postBookedSlots(payload);
+       await postBookedSlots(payload);
       // console.log("Booking Success:", response);
       message.success("Tham gia thành công!");
       reset();

@@ -36,6 +36,7 @@ color: rgba(22,24,35,0.5);;
 }
 
 .action{
+  gap: 10px;
   display: flex;
   align-items: center;
 }
@@ -75,3 +76,90 @@ margin-left: 28px;
   overflow: hidden;  /* Ẩn phần chữ bị dư */
   white-space: nowrap; /* Giữ nguyên trên một dòng */
 }
+
+
+
+
+
+
+
+
+.notification-dropdown {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 30px 20px;
+  min-width: 250px;
+}
+
+.notification-item {
+  display: grid;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-name {
+  color: #000000;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  gap: 5px;
+}
+
+.accept-btn,
+.decline-btn {
+  border: none;
+  padding: 6px 10px ;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.accept-btn {
+  background: #007bff;
+  color: white;
+  margin-left: 50px;
+}
+
+.decline-btn {
+  background: #838383;
+  color: white;
+}
+
+.no-requests {
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+  padding: 10px;
+}
+
+.notification-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+}
+.notification-btn sup{
+  right: 0 !important;
+}
+
+
+
