@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 // import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import {
   ConversationList,
@@ -7,34 +7,46 @@ import {
   Search,
 } from "@chatscope/chat-ui-kit-react";
 import { useTranslation } from "react-i18next";
+import { getAllFriends } from "~/services/addsFriends";
+import { set } from "react-hook-form";
 
 export default function SideBarChat() {
   const { t } = useTranslation();
+  const [userInfo, setUser] = useState(null);
+  const [pendingRequests, setPendingRequests] = useState([]);
 
-  return (
-    <div className="p-3"
-      style={{
-        height: "460px",
-      }}
-    >
-      <Search placeholder={t("chat.placeholder-input-search")} />
-      <ConversationList>
-        <Conversation
-          name="Huy"
-          lastSenderName="QHuy"
-          info="Gì z ní"
-        >
-          <Avatar src={require("./images/ram.png")} name="Huy" />
-        </Conversation>
+  useEffect(() => {
+    const token = localStorage.getItem("token-login");
 
+    if (token) {
+     
+      getAllFriends(token).then((data) => {
+        if (data) setUser(data);
+      });
+    }
+  }, [localStorage.getItem("token-login")]);
+
+
+return (
+  <div className="p-3" style={{ height: "460px" }}>
+    <Search placeholder={t("chat.placeholder-input-search")} />
+    <ConversationList>
+      {userInfo?.map((user) => (
         <Conversation
-          name="Huy"
-          lastSenderName="QHuy"
-          info="Ok con dê"
+          key={user.userId}
+          name={`${user.lastname} ${user.firstname}`}
+          lastSenderName={user.email} // Có thể thay bằng thông tin khác
+          info={user.bio || "Không có thông tin"} // Hiển thị bio nếu có
         >
-          <Avatar src={require("./images/ram.png")} name="Huy" />
+          <Avatar
+            src={`${process.env.REACT_APP_PATH_IMAGE}avatar/${user.avatar}`}
+            name={user.firstname}
+          />
         </Conversation>
-      </ConversationList>
-    </div>
-  );
+      ))}
+    </ConversationList>
+  </div>
+);
+
+
 }
