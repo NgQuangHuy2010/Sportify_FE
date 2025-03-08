@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card, Row, Col, Modal } from "antd";
+import { Card, Row, Col, Modal, message } from "antd";
 import styles from "./home.module.scss";
 import FilterUser from "./filterUser";
 import classNames from "classnames/bind";
@@ -7,6 +7,7 @@ import BookVenuesCarousel from "./bookVenuesCarousel";
 import { useNavigate } from "react-router-dom";
 import { getAllUser } from "~/services/getAllUser";
 import { infoUser } from "~/services/infoUser";
+import { deleteInvitation, sendInvitation } from "~/services/addsFriends";
 
 const cx = classNames.bind(styles);
 const { Meta } = Card;
@@ -16,8 +17,12 @@ function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [users, setUsers] = useState([]);
-  const showModal = (profile) => {
-    setSelectedProfile(profile);
+  const [sentRequests, setSentRequests] = useState([]);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const token = localStorage.getItem("token-login");
+
+  const showConfirmModal = (userId) => {
+    setSelectedUserId(userId);
     setIsModalOpen(true);
   };
 
@@ -53,6 +58,59 @@ function Home() {
     fetchUsers();
   }, []);
 
+  useEffect(() => {
+    const savedRequests =
+      JSON.parse(localStorage.getItem("sentRequests")) || [];
+    setSentRequests(savedRequests);
+  }, []);
+
+  useEffect(() => {
+    const fetchSentRequests = async () => {
+      try {
+        const storedRequests =
+          JSON.parse(localStorage.getItem("sentRequests")) || [];
+        setSentRequests(storedRequests);
+      } catch (error) {
+        console.error("Error loading sent requests:", error);
+      }
+    };
+
+    fetchSentRequests();
+  }, []);
+
+  const handleSendRequest = async (receiverId) => {
+    if (!token) {
+      alert("Bạn chưa đăng nhập!");
+      return;
+    }
+
+    try {
+      const response = await sendInvitation(receiverId, token);
+      const updatedRequests = [...sentRequests, receiverId];
+      setSentRequests(updatedRequests);
+      localStorage.setItem("sentRequests", JSON.stringify(updatedRequests));
+      message.success("Gửi lời mời thành công");
+      console.log("Response:", response);
+    } catch (error) {
+      alert("Gửi lời mời thất bại!");
+      console.error("Error:", error);
+    }
+  };
+
+  //hủy lời mời
+  const handleCancelRequest = async () => {
+    try {
+      await deleteInvitation(selectedUserId, token);
+      const updatedRequests = sentRequests.filter((id) => id !== selectedUserId);
+      setSentRequests(updatedRequests);
+      localStorage.setItem("sentRequests", JSON.stringify(updatedRequests)); // Lưu vào localStorage
+      message.success("Hủy lời mời thành công");
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Failed to cancel invitation:", error);
+    }
+  };
+
   return (
     <div>
       <div className="p-5">
@@ -84,7 +142,6 @@ function Home() {
                       marginRight: "16px",
                       cursor: "pointer",
                     }}
-                    onClick={() => showModal(item)}
                   />
 
                   {/* Thông tin cá nhân */}
@@ -96,7 +153,6 @@ function Home() {
                         fontSize: "18px",
                         cursor: "pointer",
                       }}
-                      onClick={() => showModal(item)}
                     >
                       {item.lastname} {item.firstname}
                     </span>
@@ -152,18 +208,30 @@ function Home() {
                 {/* Hành động */}
                 <div className="d-flex justify-content-around mt-5 ">
                   <button
-                    className={cx("button-connect")}
-                    onClick={(e) => e.stopPropagation()}
+                    className={cx("button-connect", {
+                      sent: sentRequests.includes(item.userId), // Nếu đã gửi lời mời, thêm class 'sent'
+                    })}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (sentRequests.includes(item.userId)) {
+                        showConfirmModal(item.userId); // Nếu đã gửi → Hủy lời mời
+                      } else {
+                        handleSendRequest(item.userId); // Nếu chưa gửi → Gửi lời mời
+                      }
+                    }}
                   >
-                    <i className="fa-solid fa-user-plus"></i>
-                    <span className="ms-2">Gửi lời mời</span>
-                  </button>
-                  <button
-                    className={cx("button-connect")}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <i className="fa-solid fa-envelope"></i>
-                    <span className="ms-2">Lời nhắn</span>
+                    <i
+                      className={`fa-solid ${
+                        sentRequests.includes(item.userId)
+                          ? "fa-user-check"
+                          : "fa-user-plus"
+                      }`}
+                    ></i>
+                    <span className="ms-2">
+                      {sentRequests.includes(item.userId)
+                        ? "Hủy lời mời"
+                        : "Gửi lời mời"}
+                    </span>
                   </button>
                 </div>
               </Card>
@@ -171,28 +239,14 @@ function Home() {
           ))}
         </Row>
         <Modal
-          title="Thông tin người dùng"
+          title="Xác nhận hủy lời mời"
           open={isModalOpen}
-          onCancel={handleCancel}
-          footer={null}
+          onOk={handleCancelRequest} // Nếu nhấn OK, gọi API hủy
+          onCancel={() => setIsModalOpen(false)} // Nếu nhấn Cancel, đóng modal
+          okText="Có"
+          cancelText="Không"
         >
-          {selectedProfile && (
-            <div>
-              <img
-                src={selectedProfile.image}
-                alt={selectedProfile.name}
-                style={{
-                  width: "100%",
-                  borderRadius: "8px",
-                  marginBottom: "16px",
-                }}
-              />
-              <h3>{selectedProfile.title}</h3>
-              <p>
-                <strong>Description:</strong> {selectedProfile.description}
-              </p>
-            </div>
-          )}
+          <p>Bạn có chắc muốn hủy lời mời kết bạn không?</p>
         </Modal>
       </div>
     </div>
