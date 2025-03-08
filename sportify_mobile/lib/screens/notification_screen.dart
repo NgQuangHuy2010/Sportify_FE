@@ -199,9 +199,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
     }
   }
 
-  void _handleCancel(int requestId) async {
+  void _handleCancel(int receiverId) async {
     try {
-      await connectService.cancelConnectionRequest(requestId, widget.token);
+      print('RECEIVERID CANCEL: $receiverId ');
+      await connectService.cancelConnectionRequest(receiverId, widget.token);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Connection request canceled successfully!'),
@@ -328,7 +329,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                 trailing: IconButton(
                                   icon: const Icon(Icons.cancel,
                                       color: Colors.red),
-                                  onPressed: () => _handleCancel(request['id']),
+                                  onPressed: () =>
+                                      _handleCancel(receiver['userId']),
                                 ),
                               ),
                             );
