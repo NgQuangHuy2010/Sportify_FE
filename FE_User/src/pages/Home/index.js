@@ -169,9 +169,15 @@ function Home() {
                     </p>
 
                     <div
+                
                       style={{
                         display: "flex",
                         alignItems: "center",
+                        flexWrap:"wrap",
+                        maxWidth:"300px",
+                        overflow:"hidden",
+                        textOverflow:"ellipsis",
+                        whiteSpace:"nowrap",
                         gap: "8px",
                       }}
                     >
