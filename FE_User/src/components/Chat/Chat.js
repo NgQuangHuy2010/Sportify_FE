@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import {
   MainContainer,
@@ -14,123 +14,132 @@ import {
 import { useTranslation } from "react-i18next";
 
 import SideBarChat from "./SideBarChat";
+import chatService from "../../services/chatService";
 import ramImage from "./images/ram.png";
-const messagess = [
-  {
-    message: "Ê",
-    sentTime: "15 mins ago",
-    sender: "Huy",
-    direction: "incoming",
-    position: "single",
-    avatar: ramImage,
-  },
-  {
-    message: "hú",
-    sentTime: "15 mins ago",
-    sender: "Huy",
-    direction: "incoming",
-    position: "single",
-    avatar: ramImage,
-  },
-  {
-    message: "Hello my frienddd",
-    sentTime: "15 mins ago",
-    sender: "Huy",
-    direction: "outgoing",
-    position: "single",
-  },
-  {
-    message: "Hú",
-    sentTime: "15 mins ago",
-    sender: "Huy",
-    direction: "outgoing",
-    position: "single",
-  },
-];
+import { infoUser } from "~/services/infoUser";
+
 export default function Main() {
-  // Set initial message input value to empty string
+  const [selectedRoomId, setSelectedRoomId] = useState(null);
+  const [messages, setMessages] = useState([]);
   const [messageInputValue, setMessageInputValue] = useState("");
   const inputRef = useRef(null);
-  const [messages, setMessages] = useState(messagess);
   const { t } = useTranslation();
+  const [currentUser, setCurrentUser] = useState(null);
+  const token = localStorage.getItem("token-login");
+
+  useEffect(() => {
+    // Lấy thông tin user khi component mount
+    if (token) {
+      infoUser(token)
+        .then((user) => setCurrentUser(user))
+        .catch((error) => console.error("Lỗi khi lấy thông tin user:", error));
+    }
+  }, [token]);
+
+  // 🏷️ Khi chọn phòng chat
+  const handleSelectRoom = async (roomId) => {
+    if (selectedRoomId) {
+      chatService.unsubscribeFromRoomMessages(selectedRoomId);
+      console.log("UNSUB ROOM ", selectedRoomId);
+    }
+
+    setSelectedRoomId(roomId);
+    setMessages([]); // Xóa tin nhắn cũ
+
+    try {
+      // 🕵 Lấy tin nhắn lịch sử
+      const chatHistory = await chatService.getChatHistory(roomId);
+      console.log("Chat History: ", chatHistory);
+      const formattedMessages = chatHistory.map((msg) => ({
+        id: msg.id,
+        sender: msg.senderName,
+        message: msg.content,
+        sentTime: new Date(msg.sentAt).toLocaleTimeString(),
+        direction:
+          msg.senderId == currentUser?.userId ? "outgoing" : "incoming",
+      }));
+      setMessages(formattedMessages);
+    } catch (error) {
+      console.error("Lỗi khi lấy lịch sử chat:", error);
+    }
+
+    // 🎧 Đăng ký lắng nghe tin nhắn mới
+    chatService.subscribeToRoomMessages(roomId, (newMessage) => {
+      console.log("NEW MES: ", newMessage);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          id: newMessage.id,
+          sender: newMessage.senderName,
+          message: newMessage.content,
+          sentTime: new Date().toLocaleTimeString(),
+          direction:
+            newMessage.senderId == currentUser.userId ? "outgoing" : "incoming",
+        },
+      ]);
+    });
+  };
+
+  // 📩 Xử lý gửi tin nhắn
   const handleSend = (message) => {
-    setMessages([...messages, { message, direction: "outgoing" }]);
+    if (!selectedRoomId || !message.trim()) return;
+
+    // Gửi tin nhắn qua WebSocket
+    chatService.sendMessage(selectedRoomId, currentUser.userId, message);
+
+    // setMessages((prevMessages) => [...prevMessages, newMessage]);
     setMessageInputValue("");
     inputRef.current?.focus();
   };
+
   return (
-    <div
-      style={{
-        height: "600px",
-        position: "relative",
-      }}
-    >
+    <div style={{ height: "600px", position: "relative" }}>
       <MainContainer responsive className="border-0">
-        <SideBarChat position="left" scrollable={false} />
+        <SideBarChat onSelectRoom={handleSelectRoom} />
 
-        <ChatContainer>
-          <ConversationHeader>
-            <ConversationHeader.Back />
-            <Avatar src={require("./images/ram.png")} name="Zoe" />
-            <ConversationHeader.Content
-              userName="Huy"
-              info="Active 30 mins ago"
+        {!selectedRoomId ? (
+          <ChatContainer className="d-flex align-items-center justify-content-center"></ChatContainer>
+        ) : (
+          <ChatContainer>
+            <ConversationHeader>
+              <ConversationHeader.Back />
+              <Avatar src={ramImage} name="Zoe" />
+              <ConversationHeader.Content userName="Huy" />
+              <ConversationHeader.Actions>
+                <button className="btn fs-3 border-0">
+                  <i className="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+              </ConversationHeader.Actions>
+            </ConversationHeader>
+
+            <MessageList>
+              <MessageSeparator content="Today" />
+
+              {messages.map((msg, index) => (
+                <Message
+                  key={index}
+                  model={{
+                    message: msg.message,
+                    sentTime: msg.sentTime,
+                    sender: msg.sender,
+                    direction: msg.direction,
+                  }}
+                >
+                  {msg.avatar && <Avatar src={msg.avatar} name={msg.sender} />}
+                </Message>
+              ))}
+            </MessageList>
+
+            <MessageInput
+              onSend={handleSend}
+              placeholder={t("chat.placeholder-input-chat")}
+              value={messageInputValue}
+              onChange={(innerHtml, textContent) =>
+                setMessageInputValue(textContent)
+              }
             />
-            <ConversationHeader.Actions>
-              <button className="btn fs-3 border-0">
-                {" "}
-                <i className="fa-solid fa-ellipsis-vertical"></i>
-              </button>
-            </ConversationHeader.Actions>
-          </ConversationHeader>
-          <MessageList
-            typingIndicator={<TypingIndicator content="Huy is typing" />}
-          >
-            <MessageSeparator content="Tuesday, 12 November 2024" />
-
-            {messages.map((msg, index) => (
-              <Message
-                key={index}
-                model={{
-                  message: msg.message,
-                  sentTime: msg.sentTime,
-                  sender: msg.sender,
-                  direction: msg.direction,
-                  position: msg.position,
-                }}
-                avatarSpacer={msg.avatarSpacer}
-              >
-                {msg.avatar && <Avatar src={msg.avatar} name={msg.sender} />}
-              </Message>
-            ))}
-          </MessageList>
-
-          <MessageInput
-            onSend={handleSend}
-            style={{ backgroundColor: "white" }}
-            placeholder={t("chat.placeholder-input-chat")}
-            value={messageInputValue}
-            onChange={(innerHtml, textContent, innerText, nodes) =>
-              setMessageInputValue(textContent)
-            }
-            // onSend={(innerHtml, textContent, innerText, nodes) => {
-            //   // console.log("Message sent:", textContent);
-            //   setMessageInputValue("");
-            // }}
-            onAttachClick={() => {
-              // Xử lý khi nhấp vào nút đính kèm
-              const inputFile = document.createElement("input");
-              inputFile.type = "file";
-              // inputFile.onchange = (event) => {
-              //   const file = event.target.files[0];
-              //   // if (file) {
-              //   //   console.log("File attached:", file); // Xử lý file tải lên
-              //   // }
-              // };
-              inputFile.click();
-            }}
-          />
-        </ChatContainer>
+          </ChatContainer>
+        )}
       </MainContainer>
     </div>
   );

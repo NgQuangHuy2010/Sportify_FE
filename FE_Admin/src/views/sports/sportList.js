@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import {
   CButton,
@@ -13,6 +12,7 @@ import {
   CCardBody,
   CCardHeader,
 } from '@coreui/react'
+import { fetchSports } from '../../services/sportService'
 
 const SportList = () => {
   const navigate = useNavigate()
@@ -20,15 +20,11 @@ const SportList = () => {
 
   // Fetch dữ liệu từ API
   useEffect(() => {
-    axios
-      .get('http://localhost:8080/api/admin/sports')
-      .then((response) => {
-        console.log(response.data)
-        setSports(response.data)
-      })
-      .catch((error) => {
-        console.error('Error fetching sports data:', error)
-      })
+    const loadSports = async () => {
+      const data = await fetchSports()
+      setSports(data)
+    }
+    loadSports()
   }, [])
 
   // Xử lý thêm mới
@@ -36,26 +32,14 @@ const SportList = () => {
     navigate('/sports/create')
   }
 
-  // Xử lý xem chi tiết
-  const handleViewDetail = (id) => {
-    alert(`View details of sport ID: ${id}`)
-  }
-
   // Xử lý chỉnh sửa
   const handleEdit = (id) => {
-    alert(`Edit sport ID: ${id}`)
+    navigate(`/sports/edit/${id}`)
   }
-
-  // Xử lý xóa
-  // const handleDelete = (id) => {
-  //   if (window.confirm('Are you sure you want to delete this sport?')) {
-  //     setSports(sports.filter((sport) => sport.id !== id))
-  //   }
-  // }
 
   return (
     <CCard className="mt-4">
-      <CCardHeader>
+      <CCardHeader className="d-flex justify-content-between align-items-center">
         <h5>Sport List</h5>
         <CButton color="primary" onClick={handleAddNew}>
           Add New
@@ -68,42 +52,26 @@ const SportList = () => {
               <CTableHeaderCell>#</CTableHeaderCell>
               <CTableHeaderCell>Sport Name</CTableHeaderCell>
               <CTableHeaderCell>Image</CTableHeaderCell>
-              {/* <CTableHeaderCell>Actions</CTableHeaderCell> */}
+              <CTableHeaderCell>Actions</CTableHeaderCell>
             </CTableRow>
           </CTableHead>
           <CTableBody>
-            {sports.map((sport, index) => (
+            {sports.map((sport) => (
               <CTableRow key={sport.id}>
                 <CTableDataCell>{sport.id}</CTableDataCell>
                 <CTableDataCell>{sport.sportName}</CTableDataCell>
                 <CTableDataCell>
                   <img
-                    src={sport.imageUrl}
+                    src={`${import.meta.env.VITE_PATH_IMAGE}sports/${sport.image}`}
                     alt={sport.sportName}
                     style={{ width: '100px', height: 'auto' }}
                   />
                 </CTableDataCell>
-                {/* <CTableDataCell>
-                  <CButton
-                    color="info"
-                    size="sm"
-                    className="me-2"
-                    onClick={() => handleViewDetail(sport.id)}
-                  >
-                    View Detail
-                  </CButton>
-                  <CButton
-                    color="warning"
-                    size="sm"
-                    className="me-2"
-                    onClick={() => handleEdit(sport.id)}
-                  >
+                <CTableDataCell>
+                  <CButton color="warning" size="sm" onClick={() => handleEdit(sport.id)}>
                     Edit
                   </CButton>
-                  <CButton color="danger" size="sm" onClick={() => handleDelete(sport.id)}>
-                    Delete
-                  </CButton>
-                </CTableDataCell> */}
+                </CTableDataCell>
               </CTableRow>
             ))}
           </CTableBody>

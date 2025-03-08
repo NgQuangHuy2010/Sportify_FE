@@ -34,6 +34,8 @@ class AuthService {
       if (exp == null) return true;
 
       final currentTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+      // print('EXP: $exp');
+      // print('Current: $currentTime');
       return currentTime >= exp;
     } catch (e) {
       return true; // Token không hợp lệ thì coi như hết hạn

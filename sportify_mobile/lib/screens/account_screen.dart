@@ -80,18 +80,21 @@ class _AccountScreenState extends State<AccountScreen> {
                 ),
                 const SizedBox(height: 24),
                 ListTile(
-                  leading: const Icon(Icons.person),
-                  title: const Text('Edit Profile'),
+                  leading: const Icon(Icons.person, color: Colors.grey),
+                  title: const Text('Edit Profile',
+                      style: TextStyle(color: Colors.grey)),
                   onTap: () {},
                 ),
                 ListTile(
-                  leading: const Icon(Icons.lock),
-                  title: const Text('Change Password'),
+                  leading: const Icon(Icons.lock, color: Colors.grey),
+                  title: const Text('Change Password',
+                      style: TextStyle(color: Colors.grey)),
                   onTap: () {},
                 ),
                 ListTile(
-                  leading: const Icon(Icons.notifications),
-                  title: const Text('Notification Settings'),
+                  leading: const Icon(Icons.notifications, color: Colors.grey),
+                  title: const Text('Notification Settings',
+                      style: TextStyle(color: Colors.grey)),
                   onTap: () {},
                 ),
                 ListTile(

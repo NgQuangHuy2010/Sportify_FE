@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-// import styles from "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import {
   ConversationList,
   Avatar,
@@ -7,46 +6,87 @@ import {
   Search,
 } from "@chatscope/chat-ui-kit-react";
 import { useTranslation } from "react-i18next";
-import { getAllFriends } from "~/services/addsFriends";
-import { set } from "react-hook-form";
+import chatService from "../../services/chatService";
+import { infoUser } from "~/services/infoUser";
 
-export default function SideBarChat() {
+export default function SideBarChat({ onSelectRoom }) {
   const { t } = useTranslation();
-  const [userInfo, setUser] = useState(null);
-  const [pendingRequests, setPendingRequests] = useState([]);
+  const [chatRooms, setChatRooms] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
+  const token = localStorage.getItem("token-login");
 
   useEffect(() => {
-    const token = localStorage.getItem("token-login");
-
     if (token) {
-     
-      getAllFriends(token).then((data) => {
-        if (data) setUser(data);
-      });
+      console.log("TOKEN IN SIDEBARCHAT: ", token);
+      infoUser(token)
+        .then((user) => {
+          console.log("✅ USER INFO FETCHED: ", user);
+          setCurrentUser(user); // Cập nhật user
+        })
+        .catch((error) =>
+          console.error("❌ Lỗi khi lấy thông tin user:", error)
+        );
+    } else {
+      console.log("NO TOKEN IN SIDEBARCHAT ");
     }
-  }, [localStorage.getItem("token-login")]);
+  }, [token]); // Chỉ chạy lại khi token thay đổi
 
+  useEffect(() => {
+    if (!currentUser) return; // Chờ `currentUser` có giá trị
 
-return (
-  <div className="p-3" style={{ height: "460px" }}>
-    <Search placeholder={t("chat.placeholder-input-search")} />
-    <ConversationList>
-      {userInfo?.map((user) => (
-        <Conversation
-          key={user.userId}
-          name={`${user.lastname} ${user.firstname}`}
-          lastSenderName={user.email} // Có thể thay bằng thông tin khác
-          info={user.bio || "Không có thông tin"} // Hiển thị bio nếu có
-        >
-          <Avatar
-            src={`${process.env.REACT_APP_PATH_IMAGE}avatar/${user.avatar}`}
-            name={user.firstname}
-          />
-        </Conversation>
-      ))}
-    </ConversationList>
-  </div>
-);
+    console.log("CURRENT USER IN SIDEBARCHAT: ", currentUser);
+    // const userId = currentUser.userId;
+    const fetchChatRooms = async () => {
+      try {
+        const rooms = await chatService.getChatRooms();
+        setChatRooms(rooms);
+      } catch (error) {
+        console.error("❌ Lỗi khi lấy danh sách phòng chat:", error);
+      }
+    };
 
+    fetchChatRooms();
+    // 📌 Nhận danh sách phòng chat mới từ server
+    const handleUpdatedChatRooms = (updatedChatRooms) => {
+      console.log(
+        "📩 Cập nhật danh sách phòng chat từ server:",
+        updatedChatRooms
+      );
+      setChatRooms(updatedChatRooms); // 🚀 Cập nhật toàn bộ danh sách mới
+    };
 
+    chatService.connectWebSocket(
+      token,
+      currentUser.userId,
+      handleUpdatedChatRooms
+    );
+
+    return () => {
+      chatService.disconnectWebSocket();
+      console.log("DISCONNECT CHATROOMLIST");
+    };
+  }, [currentUser]);
+
+  return (
+    <div className="p-3" style={{ height: "460px" }}>
+      <Search placeholder={t("chat.placeholder-input-search")} />
+      <ConversationList>
+        {chatRooms.map((room) => (
+          <Conversation
+            key={room.roomId}
+            name={room.otherUserName}
+            lastSenderName={room.lastMessage ? room.otherUserName : ""}
+            info={room.lastMessage || "Chưa có tin nhắn"}
+            onClick={() => onSelectRoom(room.roomId)}
+          >
+            <Avatar
+              size="50px"
+              src={`${process.env.REACT_APP_PATH_IMAGE}avatar/${room.otherUserAvatar}`}
+              name={room.name}
+            />
+          </Conversation>
+        ))}
+      </ConversationList>
+    </div>
+  );
 }
