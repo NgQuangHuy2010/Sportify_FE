@@ -1,10 +1,11 @@
 // import 'package:flutter/material.dart';
 // import '../utils/constants.dart';
+// import '../services/connect_service.dart';
 
 // class UserCard extends StatelessWidget {
 //   final String avatar;
 //   final String name;
-//   final String receiverId;
+//   final int receiverId;
 //   final String token;
 //   final List<Map<String, String>>
 //       favoriteSports; // List of {id, sportName, imageSport}
@@ -78,20 +79,45 @@
 //       context: context,
 //       builder: (context) {
 //         return AlertDialog(
-//           title: Text('Send connection request to $name'),
+//           title: Text('Send connection request to $name?'),
+//           content:
+//               const Text('Are you sure you want to send a connection request?'),
 //           actions: [
 //             TextButton(
 //               onPressed: () => Navigator.pop(context),
 //               child: const Text('Cancel'),
 //             ),
 //             ElevatedButton(
-//               onPressed: () => Navigator.pop(context),
+//               onPressed: () async {
+//                 Navigator.pop(context);
+//                 await _sendConnectionRequest(context);
+//               },
 //               child: const Text('Send Request'),
 //             ),
 //           ],
 //         );
 //       },
 //     );
+//   }
+
+//   Future<void> _sendConnectionRequest(BuildContext context) async {
+//     final connectService = ConnectService();
+//     try {
+//       await connectService.sendConnectionRequest(receiverId, token);
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         const SnackBar(
+//           content: Text('Connection request sent successfully!'),
+//           backgroundColor: Colors.green,
+//         ),
+//       );
+//     } catch (e) {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(
+//           content: Text('Failed to send request: $e'),
+//           backgroundColor: Colors.red,
+//         ),
+//       );
+//     }
 //   }
 // }
 
@@ -104,8 +130,8 @@ class UserCard extends StatelessWidget {
   final String name;
   final int receiverId;
   final String token;
-  final List<Map<String, String>>
-      favoriteSports; // List of {id, sportName, imageSport}
+  final List<Map<String, String>> favoriteSports;
+  final VoidCallback onConnectSuccess;
 
   const UserCard({
     super.key,
@@ -114,6 +140,7 @@ class UserCard extends StatelessWidget {
     required this.favoriteSports,
     required this.receiverId,
     required this.token,
+    required this.onConnectSuccess,
   });
 
   @override
@@ -201,6 +228,7 @@ class UserCard extends StatelessWidget {
     final connectService = ConnectService();
     try {
       await connectService.sendConnectionRequest(receiverId, token);
+      onConnectSuccess(); // Xoá user khỏi danh sách khi thành công
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Connection request sent successfully!'),
