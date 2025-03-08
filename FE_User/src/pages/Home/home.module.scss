@@ -1,14 +1,14 @@
-.card-profile{
-    width: 300px;
+.card-profile {
+  width: 300px;
 }
-.title-profile{
-    cursor: pointer;
+.title-profile {
+  cursor: pointer;
   transition: all 0.3s ease;
 
-    &:hover {
-        color: #1890ff; // Màu chữ khi hover
-        cursor: pointer;
-      }
+  &:hover {
+    color: #1890ff; // Màu chữ khi hover
+    cursor: pointer;
+  }
 }
 .button-connect {
   background-color: transparent;
@@ -19,12 +19,12 @@
 
   /* Hover effect */
   &:hover {
-    color: #007bff; /* Đổi màu chữ */
-    border-color: #007bff;
+    color: #cacaca; /* Đổi màu chữ */
+    border-color: #adaeaf;
     cursor: pointer;
 
     i {
-      color: #007bff; /* Màu icon khi hover */
+      color: #cacaca; /* Màu icon khi hover */
     }
   }
 
@@ -33,7 +33,20 @@
     margin-right: 8px;
   }
 }
-.img-profile{
-    cursor: pointer;
+.img-profile {
+  cursor: pointer;
 }
 
+.button-connect {
+  background-color: #007bff; /* Màu xanh mặc định */
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  transition: 0.3s;
+}
+
+.button-connect.sent {
+  background-color: #808080 !important; /* Màu xanh lá khi đã gửi */
+  color: white;
+}
