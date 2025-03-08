@@ -19,7 +19,7 @@ import IndexHeaderItems from "~/components/ModalComponent/HeaderItemModal/IndexH
 import { infoUser } from "~/services/infoUser";
 import { updateProfile } from "~/services/updateProfile";
 import { message, Modal, Badge } from "antd";
-import { acceptFriends, getPendingFriends } from "~/services/addsFriends";
+import { acceptFriends, getPendingFriends, rejectFriends } from "~/services/addsFriends";
 import dayjs from "dayjs";
 const cx = classNames.bind(styles);
 
@@ -212,8 +212,20 @@ function Header() {
     }
   };
 
-  const handleDecline = (id) => {
-    console.log(`Declined request from user ${id}`);
+  const handleDecline = async (id) => {
+    try {
+      console.log(`Declined request from user ${id}`);
+
+      const response = await rejectFriends(id);
+      console.log("API Response:", response);
+      message.success("Từ chối lời mời thành công!");
+      setPendingRequests((prevRequests) =>
+        prevRequests.filter((request) => request.id !== id)
+      );
+    } catch (error) {
+      console.error("Lỗi khi từ chói yêu cầu:", error);
+      message.error("Từ chối lời mời thất bại!");
+    }
   };
 
   return (

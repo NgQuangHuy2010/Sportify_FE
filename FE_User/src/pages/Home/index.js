@@ -101,7 +101,9 @@ function Home() {
   const handleCancelRequest = async () => {
     try {
       await deleteInvitation(selectedUserId, token);
-      const updatedRequests = sentRequests.filter((id) => id !== selectedUserId);
+      const updatedRequests = sentRequests.filter(
+        (id) => id !== selectedUserId
+      );
       setSentRequests(updatedRequests);
       localStorage.setItem("sentRequests", JSON.stringify(updatedRequests)); // Lưu vào localStorage
       message.success("Hủy lời mời thành công");
@@ -176,28 +178,37 @@ function Home() {
                       }}
                     >
                       {item.sports.length > 0 ? (
-                        item.sports.map((sport, index) => (
-                          <div
-                            key={index}
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "4px",
-                            }}
-                          >
-                            <img
-                              src={`${process.env.REACT_APP_PATH_IMAGE}sports/${sport.imageUrl}`}
-                              alt={sport.sportName}
+                        <>
+                          {item.sports.slice(0, 2).map((sport, index) => (
+                            <div
+                              key={index}
                               style={{
-                                width: "20px",
-                                height: "20px",
-                                objectFit: "cover",
-                                borderRadius: "4px",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "4px",
                               }}
-                            />
-                            <span>{sport.sportName}</span>
-                          </div>
-                        ))
+                            >
+                              <img
+                                src={`${process.env.REACT_APP_PATH_IMAGE}sports/${sport.imageUrl}`}
+                                alt={sport.sportName}
+                                style={{
+                                  width: "20px",
+                                  height: "20px",
+                                  objectFit: "cover",
+                                  borderRadius: "4px",
+                                }}
+                              />
+                              <span>{sport.sportName}</span>
+                            </div>
+                          ))}
+                          {item.sports.length > 2 && (
+                            <span
+                              style={{ fontWeight: "bold", marginLeft: "5px" }}
+                            >
+                              +{item.sports.length - 2}
+                            </span>
+                          )}
+                        </>
                       ) : (
                         <span>Không có môn thể thao</span>
                       )}
