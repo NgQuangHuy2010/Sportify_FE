@@ -15,12 +15,44 @@ class ExploreScreen extends StatefulWidget {
 
 class _ExploreScreenState extends State<ExploreScreen> {
   late Future<List<ListUser>> futureUsers;
+  List<ListUser> users = [];
+  List<ListUser> visibleUsers = [];
+  final int loadBatchSize = 10;
+  int loadedCount = 0;
+  final ScrollController _scrollController = ScrollController();
   final userService = UserService(baseUrl: BASE_URL);
 
   @override
   void initState() {
     super.initState();
     futureUsers = userService.fetchUsersToExplore(widget.token);
+    futureUsers.then((fetchedUsers) {
+      setState(() {
+        users = fetchedUsers;
+        _loadMoreUsers();
+      });
+    });
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        _loadMoreUsers();
+      }
+    });
+  }
+
+  void _loadMoreUsers() {
+    setState(() {
+      final nextBatch = users.skip(loadedCount).take(loadBatchSize).toList();
+      visibleUsers.addAll(nextBatch);
+      loadedCount += nextBatch.length;
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -35,24 +67,34 @@ class _ExploreScreenState extends State<ExploreScreen> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
-            final users = snapshot.data ?? [];
             return ListView.builder(
-              itemCount: users.length,
+              controller: _scrollController,
+              itemCount:
+                  visibleUsers.length + (loadedCount < users.length ? 1 : 0),
               itemBuilder: (context, index) {
-                final user = users[index];
-                return UserCard(
-                  token: widget.token,
-                  receiverId: user.userId,
-                  avatar: user.avatar,
-                  name: '${user.firstname} ${user.lastname}',
-                  favoriteSports: user.sports
-                      .map((sport) => {
-                            'id': sport.id.toString(),
-                            'sportName': sport.sportName,
-                            'imageSport': sport.imageUrl,
-                          })
-                      .toList(),
-                );
+                if (index < visibleUsers.length) {
+                  final user = visibleUsers[index];
+                  return UserCard(
+                    token: widget.token,
+                    receiverId: user.userId,
+                    avatar: user.avatar,
+                    name: '${user.firstname} ${user.lastname}',
+                    favoriteSports: user.sports
+                        .map((sport) => {
+                              'id': sport.id.toString(),
+                              'sportName': sport.sportName,
+                              'imageSport': sport.imageUrl,
+                            })
+                        .toList(),
+                  );
+                } else {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
               },
             );
           }

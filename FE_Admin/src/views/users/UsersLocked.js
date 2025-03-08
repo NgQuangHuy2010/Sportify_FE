@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
 import ReactPaginate from 'react-paginate'
 import {
   CButton,
@@ -16,7 +15,7 @@ import {
   CAvatar,
   CSpinner,
 } from '@coreui/react'
-import { fetchUsersApi } from '../../apis/userapi'
+import { fetchLockedUsers, toggleUserLock } from '../../services/userService'
 
 const UserList = () => {
   const navigate = useNavigate()
@@ -27,19 +26,14 @@ const UserList = () => {
   const pageSize = 20
 
   // Fetch dữ liệu từ API
-  const fetchUsers = (page) => {
+  const fetchUsers = async (page) => {
     setLoading(true)
-    axios
-      .get(`http://localhost:8080/api/admin/users/locked?page=${page}&size=${pageSize}`)
-      .then((response) => {
-        setUsers(response.data.content) // Giả sử API trả về response với field 'content'
-        setTotalPages(response.data.totalPages) // Giả sử API trả về tổng số trang
-        setLoading(false)
-      })
-      .catch((error) => {
-        console.error('Error fetching users:', error)
-        setLoading(false)
-      })
+    const data = await fetchLockedUsers(page, pageSize)
+    if (data) {
+      setUsers(data.content)
+      setTotalPages(data.totalPages)
+    }
+    setLoading(false)
   }
 
   // Gọi fetchUsers khi component render hoặc khi currentPage thay đổi
@@ -57,9 +51,9 @@ const UserList = () => {
     navigate(`/user/detail/${id}`)
   }
 
-  // Xử lý chỉnh sửa
-  const handleEdit = (id) => {
-    navigate(`/user/edit/${id}`)
+  const handleToggleLock = async (id) => {
+    const success = await toggleUserLock(id)
+    if (success) loadUsers(currentPage)
   }
 
   return (
@@ -87,7 +81,7 @@ const UserList = () => {
                 </CTableRow>
               </CTableHead>
               <CTableBody>
-                {users.map((user, index) => (
+                {users.map((user) => (
                   <CTableRow key={user.id}>
                     <CTableDataCell>{user.id}</CTableDataCell>
                     <CTableDataCell>
@@ -99,7 +93,7 @@ const UserList = () => {
                     <CTableDataCell>{user.phone}</CTableDataCell>
                     <CTableDataCell>{user.gender}</CTableDataCell>
                     <CTableDataCell>
-                      {user.isLocked ? (
+                      {user.locked ? (
                         <span className="text-danger">Locked</span>
                       ) : (
                         <span className="text-success">Active</span>
@@ -114,8 +108,12 @@ const UserList = () => {
                       >
                         View Detail
                       </CButton>
-                      <CButton color="warning" size="sm" onClick={() => handleEdit(user.id)}>
-                        Edit
+                      <CButton
+                        color={user.locked ? 'success' : 'danger'}
+                        size="sm"
+                        onClick={() => handleToggleLock(user.id)}
+                      >
+                        {user.locked ? 'Unlock' : 'Lock'}
                       </CButton>
                     </CTableDataCell>
                   </CTableRow>

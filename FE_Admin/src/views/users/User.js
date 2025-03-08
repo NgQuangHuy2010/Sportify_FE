@@ -37,7 +37,7 @@ const UserManagement = () => {
               <CIcon icon={cilList} className="me-2" /> User List
             </CButton>
           </CCol>
-          <CCol xs={12} md={3}>
+          {/* <CCol xs={12} md={3}>
             <CButton color="success" className="w-100" onClick={goToAddUser}>
               <CIcon icon={cilPlus} className="me-2" /> Add New User
             </CButton>
@@ -46,7 +46,7 @@ const UserManagement = () => {
             <CButton color="info" className="w-100" onClick={goToSearch}>
               <CIcon icon={cilSearch} className="me-2" /> Search
             </CButton>
-          </CCol>
+          </CCol> */}
           <CCol xs={12} md={3}>
             <CButton color="danger" className="w-100" onClick={goToLockedUsers}>
               <CIcon icon={cilLockLocked} className="me-2" /> Locked Users

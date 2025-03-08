@@ -32,12 +32,12 @@ const _nav = [
     to: '/sports-centers',
     icon: <CIcon icon={cilGroup} customClassName="nav-icon" />,
   },
-  {
-    component: CNavItem,
-    name: 'Feedback Management',
-    to: '/feedback',
-    icon: <CIcon icon={cilGroup} customClassName="nav-icon" />,
-  },
+  // {
+  //   component: CNavItem,
+  //   name: 'Feedback Management',
+  //   to: '/feedback',
+  //   icon: <CIcon icon={cilGroup} customClassName="nav-icon" />,
+  // },
 ]
 
 export default _nav

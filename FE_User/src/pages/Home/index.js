@@ -42,7 +42,7 @@ function Home() {
             (user) => user.userId !== currentUser.userId
           );
 
-          console.log("user", filteredUsers);
+          // console.log("user", filteredUsers);
 
           setUsers(filteredUsers);
         }
