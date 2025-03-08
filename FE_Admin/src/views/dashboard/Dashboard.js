@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { CCard, CCardBody, CCardHeader, CRow, CCol, CWidgetStatsA, CButton } from '@coreui/react'
 import { CChartPie, CChartBar } from '@coreui/react-chartjs'
+import { getUserStatistics, getUsersByMonth } from '../../services/dashboardService'
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -11,23 +12,32 @@ const Dashboard = () => {
   })
   const [usersByMonth, setUsersByMonth] = useState({})
   const [year, setYear] = useState(new Date().getFullYear())
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
+  // Fetch user statistics
   useEffect(() => {
-    fetch('http://localhost:8080/api/admin/dashboard/user-statistics')
-      .then((response) => response.json())
-      .then((data) => setStats(data))
-      .catch((error) => console.error('Error fetching data:', error))
+    setLoading(true)
+    getUserStatistics().then((data) => {
+      if (data) setStats(data)
+      setLoading(false)
+    })
   }, [])
 
+  // Fetch users by month
   useEffect(() => {
-    fetch(`http://localhost:8080/api/admin/dashboard/statistics/users-by-month?year=${year}`)
-      .then((response) => response.json())
-      .then((data) => setUsersByMonth(data))
-      .catch((error) => console.error('Error fetching data:', error))
+    setLoading(true)
+    getUsersByMonth(year).then((data) => {
+      if (data) setUsersByMonth(data)
+      setLoading(false)
+    })
   }, [year])
 
   return (
     <div className="container mt-4">
+      {loading && <p>Loading...</p>}
+      {error && <p className="text-danger">Error: {error}</p>}
+
       <CRow>
         <CCol md="4">
           <CWidgetStatsA
@@ -37,14 +47,6 @@ const Dashboard = () => {
             title="Total Users"
           />
         </CCol>
-        {/* <CCol md="4">
-          <CWidgetStatsA
-            className="mb-4"
-            color="danger"
-            value={stats.lockedUsers}
-            title="Locked Users"
-          />
-        </CCol> */}
         <CCol md="4">
           <CWidgetStatsA
             className="mb-4"
@@ -54,6 +56,7 @@ const Dashboard = () => {
           />
         </CCol>
       </CRow>
+
       <CCard>
         <CCardHeader>Users by Sport</CCardHeader>
         <CCardBody>

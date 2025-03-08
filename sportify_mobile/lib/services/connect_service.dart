@@ -42,6 +42,51 @@ class ConnectService {
     }
   }
 
+  Future<List<dynamic>> getOutgoingRequests(String token) async {
+    final url = Uri.parse('$BASE_URL/api/connections/outgoing-requests');
+    print('Service get outgoing request to url : $url');
+    return [
+      {
+        "id": 101,
+        "receiver": {
+          "userId": 5,
+          "firstname": "John",
+          "lastname": "Doe",
+          "avatar": "john_doe.jpg",
+          "sports": [
+            {"id": 1, "sportName": "Soccer", "imageUrl": "icon_soccer.png"},
+            {
+              "id": 2,
+              "sportName": "Basketball",
+              "imageUrl": "icon_basketball.png"
+            }
+          ]
+        },
+        "status": "PENDING",
+        "sentAt": "2025-03-06T12:34:56.789Z"
+      },
+      {
+        "id": 102,
+        "receiver": {
+          "userId": 6,
+          "firstname": "Jane",
+          "lastname": "Smith",
+          "avatar": "jane_smith.jpg",
+          "sports": [
+            {"id": 3, "sportName": "Tennis", "imageUrl": "icon_tennis.png"}
+          ]
+        },
+        "status": "PENDING",
+        "sentAt": "2025-03-05T09:15:30.123Z"
+      }
+    ];
+  }
+
+  Future<void> cancelConnectionRequest(int requestId, String token) async {
+    final url = Uri.parse('$BASE_URL/api/connections/cancel/$requestId');
+    print('Service cancel request to url : $url');
+  }
+
   Future<void> acceptConnectionRequest(int requestId, String token) async {
     final url = Uri.parse('$BASE_URL/api/connections/accept/$requestId');
 

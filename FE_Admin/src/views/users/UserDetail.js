@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import {
   CCard,
   CCardBody,
@@ -11,50 +12,47 @@ import {
   CRow,
   CCol,
   CAvatar,
+  CSpinner,
 } from '@coreui/react'
+import { fetchUserDetail, toggleUserLock } from '../../services/userService'
+import useLocationData from '../../services/useLocationData'
 
 const UserDetail = () => {
+  const { id } = useParams()
+  const [user, setUser] = useState(null)
   const [activeTab, setActiveTab] = useState('basic')
+  const [loading, setLoading] = useState(true)
 
-  // Dữ liệu mẫu cho người dùng
-  const userData = {
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john.doe@example.com',
-    phone: '123-456-7890',
-    gender: 'Male',
-    avatar: 'https://www.example.com/avatar.jpg',
-    address: {
-      city: 'New York',
-      district: 'Manhattan',
-      ward: 'Ward 10',
-      no: '123 Main St',
-    },
-    sports: [
-      { id: 1, sportName: 'Basketball', sportImage: 'https://www.example.com/basketball.jpg' },
-      { id: 2, sportName: 'Football', sportImage: 'https://www.example.com/football.jpg' },
-    ],
-    connectionSettings: {
-      time: { from: '09:00', to: '18:00' },
-      age: { from: 20, to: 30 },
-      gender: 'Any',
-    },
-    friends: [
-      { id: 1, name: 'Alice', avatar: 'https://www.example.com/avatar-alice.jpg' },
-      { id: 2, name: 'Bob', avatar: 'https://www.example.com/avatar-bob.jpg' },
-      { id: 3, name: 'Charlie', avatar: 'https://www.example.com/avatar-charlie.jpg' },
-    ],
+  useEffect(() => {
+    const getUserData = async () => {
+      setLoading(true)
+      const data = await fetchUserDetail(id)
+      if (data) setUser(data)
+      setLoading(false)
+    }
+    getUserData()
+  }, [id])
+
+  const locationData = useLocationData(user?.address)
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A'
+    const date = new Date(dateString)
+    return date.toLocaleDateString('vi-VN') // Định dạng dd/mm/yyyy
   }
+
+  if (loading) return <CSpinner color="primary" />
+  if (!user) return <p>User not found.</p>
 
   return (
     <CCard className="mt-4">
       <CCardHeader>
         <h5>
-          User Detail: {userData.firstName} {userData.lastName}
+          User Detail: {user.firstName} {user.lastName}
         </h5>
       </CCardHeader>
       <CCardBody>
-        {/* Navigation Tabs */}
+        {/* Tabs */}
         <CNav variant="tabs" role="tablist">
           <CNavItem>
             <CNavLink active={activeTab === 'basic'} onClick={() => setActiveTab('basic')}>
@@ -66,19 +64,6 @@ const UserDetail = () => {
               Sports
             </CNavLink>
           </CNavItem>
-          <CNavItem>
-            <CNavLink
-              active={activeTab === 'connection'}
-              onClick={() => setActiveTab('connection')}
-            >
-              Connection Settings
-            </CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink active={activeTab === 'friends'} onClick={() => setActiveTab('friends')}>
-              List Friends
-            </CNavLink>
-          </CNavItem>
         </CNav>
 
         {/* Tab Content */}
@@ -88,24 +73,30 @@ const UserDetail = () => {
             <CRow>
               <CCol md="6">
                 <p>
-                  <strong>Name:</strong> {userData.firstName} {userData.lastName}
+                  <strong>Name:</strong> {user.firstName} {user.lastName}
                 </p>
                 <p>
-                  <strong>Email:</strong> {userData.email}
+                  <strong>Email:</strong> {user.email}
                 </p>
                 <p>
-                  <strong>Phone:</strong> {userData.phone}
+                  <strong>Phone:</strong> {user.phone}
                 </p>
                 <p>
-                  <strong>Gender:</strong> {userData.gender}
+                  <strong>Birthday:</strong> {formatDate(user.birthday)}
+                </p>
+                <p>
+                  <strong>Account Created:</strong> {formatDate(user.createdOn)}
                 </p>
               </CCol>
               <CCol md="6">
                 <p>
-                  <strong>Address:</strong> {userData.address.no}, {userData.address.ward},{' '}
-                  {userData.address.district}, {userData.address.city}
+                  <strong>Address:</strong> {user.address.no}, {locationData.ward},{' '}
+                  {locationData.district}, {locationData.city}
                 </p>
-                <CAvatar src={userData.avatar} size="lg" />
+                <CAvatar
+                  src={`${import.meta.env.VITE_PATH_IMAGE}avatar/${user.avatar}`}
+                  size="lg"
+                />
               </CCol>
             </CRow>
           </CTabPane>
@@ -113,47 +104,21 @@ const UserDetail = () => {
           {/* Sports Tab */}
           <CTabPane visible={activeTab === 'sports'}>
             <CRow>
-              {userData.sports.map((sport) => (
-                <CCol key={sport.id} md="4" className="mb-4">
-                  <img src={sport.sportImage} alt={sport.sportName} width="100%" />
-                  <p>
-                    <strong>{sport.sportName}</strong>
-                  </p>
-                </CCol>
-              ))}
-            </CRow>
-          </CTabPane>
-
-          {/* Connection Settings Tab */}
-          <CTabPane visible={activeTab === 'connection'}>
-            <CRow>
-              <CCol md="6">
-                <p>
-                  <strong>Time:</strong> {userData.connectionSettings.time.from} -{' '}
-                  {userData.connectionSettings.time.to}
-                </p>
-                <p>
-                  <strong>Age:</strong> {userData.connectionSettings.age.from} -{' '}
-                  {userData.connectionSettings.age.to}
-                </p>
-                <p>
-                  <strong>Gender:</strong> {userData.connectionSettings.gender}
-                </p>
-              </CCol>
-            </CRow>
-          </CTabPane>
-
-          {/* List Friends Tab */}
-          <CTabPane visible={activeTab === 'friends'}>
-            <CRow>
-              {userData.friends.map((friend) => (
-                <CCol key={friend.id} md="4" className="mb-4 text-center">
-                  <CAvatar src={friend.avatar} size="lg" />
-                  <p>
-                    <strong>{friend.name}</strong>
-                  </p>
-                </CCol>
-              ))}
+              {user.sports && user.sports.length > 0 ? (
+                user.sports.map((sport) => (
+                  <CCol key={sport.id} md="3" className="mb-4 text-center">
+                    <img
+                      src={`${import.meta.env.VITE_PATH_IMAGE}sports/${sport.image}`}
+                      style={{ width: '80px', height: '80px' }}
+                    />
+                    <p>
+                      <strong>{sport.sportName}</strong>
+                    </p>
+                  </CCol>
+                ))
+              ) : (
+                <p>No sports selected.</p>
+              )}
             </CRow>
           </CTabPane>
         </CTabContent>

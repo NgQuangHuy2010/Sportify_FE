@@ -1,10 +1,13 @@
 import React, { useState } from 'react'
 import { CCard, CCardBody, CCardHeader, CForm, CFormInput, CButton } from '@coreui/react'
+import { createSport } from '../../services/sportService'
+import { useNavigate } from 'react-router-dom'
 
 const CreateSport = () => {
   const [sportName, setSportName] = useState('')
   const [image, setImage] = useState(null)
   const [preview, setPreview] = useState(null)
+  const navigate = useNavigate()
 
   const handleImageChange = (event) => {
     const file = event.target.files[0]
@@ -16,29 +19,14 @@ const CreateSport = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault()
-    const formData = new FormData()
-    formData.append('sportName', sportName)
-    if (image) {
-      formData.append('image', image)
-    }
-
-    try {
-      const response = await fetch('http://localhost:8080/api/admin/sports', {
-        method: 'POST',
-        body: formData,
-      })
-
-      if (response.ok) {
-        setSportName('')
-        setImage(null)
-        setPreview(null)
-        navigate('/sports')
-        // alert('Sport created successfully!')
-      } else {
-        alert('Failed to create sport')
-      }
-    } catch (error) {
-      console.error('Error creating sport:', error)
+    const result = await createSport(sportName, image)
+    if (result) {
+      setSportName('')
+      setImage(null)
+      setPreview(null)
+      navigate('/sports')
+    } else {
+      alert('Failed to create sport')
     }
   }
 

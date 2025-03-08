@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:sportify_mobile/models/user_info.dart';
 import 'package:sportify_mobile/services/account_service.dart';
 import 'package:sportify_mobile/utils/constants.dart';
@@ -109,6 +110,20 @@ class _MessageScreenState extends State<MessageScreen> {
                       final conversation = filteredConversations[index];
                       final isUnread =
                           conversation['lastMessageIsRead'] == false;
+                      final lastMessageTime = conversation['lastMessageTime'];
+
+                      String formatLastMessageTime(String dateTimeStr) {
+                        final dateTime = DateTime.parse(dateTimeStr);
+                        final now = DateTime.now();
+                        if (dateTime.year == now.year &&
+                            dateTime.month == now.month &&
+                            dateTime.day == now.day) {
+                          return DateFormat('HH:mm').format(dateTime);
+                        } else {
+                          return DateFormat('dd/MM/yyyy HH:mm')
+                              .format(dateTime);
+                        }
+                      }
 
                       return ListTile(
                         leading: CircleAvatar(
@@ -123,12 +138,23 @@ class _MessageScreenState extends State<MessageScreen> {
                                 isUnread ? FontWeight.bold : FontWeight.normal,
                           ),
                         ),
-                        subtitle: Text(
-                          conversation['lastMessage'] ?? '',
-                          style: TextStyle(
-                            fontWeight:
-                                isUnread ? FontWeight.bold : FontWeight.normal,
-                          ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              conversation['lastMessage'] ?? '',
+                              style: TextStyle(
+                                fontWeight: isUnread
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                            ),
+                            Text(
+                              'Sent at: ${formatLastMessageTime(lastMessageTime)}',
+                              style: const TextStyle(
+                                  color: Colors.grey, fontSize: 12),
+                            ),
+                          ],
                         ),
                         trailing: isUnread
                             ? const Icon(Icons.notifications_active,

@@ -15,6 +15,7 @@ const FeedbackSupportManagement = React.lazy(() => import('./views/feedback/feed
 //Sport:
 const SportList = React.lazy(() => import('./views/sports/sportList'))
 const CreateSport = React.lazy(() => import('./views/sports/createSport'))
+const EditSport = React.lazy(() => import('./views/sports/editSport'))
 
 const SportCenterManagement = React.lazy(() => import('./views/sports/sportCenterManagement'))
 const SportFieldManagement = React.lazy(() => import('./views/sports/sportFieldManagement'))
@@ -34,6 +35,7 @@ const routes = [
 
   { path: '/sports', name: 'Sports', element: SportList },
   { path: '/sports/create', name: 'Sports', element: CreateSport },
+  { path: '/sports/edit/:id', name: 'Sports', element: EditSport },
   { path: '/sports-centers', name: 'SportCenterManagement', element: SportCenterManagement },
   {
     path: '/sports-fields/:sportsCenterId',
