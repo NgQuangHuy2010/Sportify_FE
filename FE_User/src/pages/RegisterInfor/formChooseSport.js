@@ -1,174 +1,35 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Checkbox, Button } from "antd";
 import styles from "./formStepsRegisterUser.module.scss"; // Import file CSS
 import classNames from "classnames/bind"; //npm i classnames
+import { getAllSport } from "~/services/getSport";
 const cx = classNames.bind(styles);
-const sportsOptions = [
-  {
-    label: (
-      <span>
-        <img
-          src="https://img.icons8.com/emoji/30/soccer-ball-emoji.png"
-          alt="football"
-          style={{ marginRight: 8 }}
-        />  
-        Bóng đá
-      </span>
-    ),
-    value: 4,
-  },
-  {
-    label: (
-      <span>
-        <img
-          src="https://img.icons8.com/emoji/30/basketball-emoji.png"
-          alt="basketball"
-          style={{ marginRight: 8 }}
-        />
-        Bóng rổ
-      </span>
-    ),
-    value: 5,
-  },
-  {
-    label: (
-      <span>
-        <img
-          src="https://img.icons8.com/emoji/30/badminton-emoji.png"
-          alt="badminton"
-          style={{ marginRight: 8 }}
-        />
-        Cầu lông
-      </span>
-    ),
-    value: 6,
-  },
-  {
-    label: (
-      <span>
-        <img
-          src="https://img.icons8.com/emoji/30/volleyball-emoji.png"
-          alt="volleyball"
-          style={{ marginRight: 8 }}
-        />
-        Bóng chuyền
-      </span>
-    ),
-    value: "volleyball",
-  },
-  {
-    label: (
-      <span>
-        <img
-          src="https://img.icons8.com/emoji/30/tennis-emoji.png"
-          alt="tennis"
-          style={{ marginRight: 8 }}
-        />
-        Quần vợt
-      </span>
-    ),
-    value: "tennis",
-  },
-  {
-    label: (
-      <span>
-        <img
-          src="https://img.icons8.com/emoji/30/ping-pong-emoji.png"
-          alt="table tennis"
-          style={{ marginRight: 8 }}
-        />
-        Bóng bàn
-      </span>
-    ),
-    value: "table_tennis",
-  },
-  {
-    label: (
-      <span>
-        <img
-          src="https://img.icons8.com/emoji/30/field-hockey-emoji.png"
-          alt="golf"
-          style={{ marginRight: 8 }}
-        />
-        Golf
-      </span>
-    ),
-    value: "golf",
-  },
-  {
-    label: (
-      <span>
-        <img
-          src="https://img.icons8.com/emoji/30/ping-pong-emoji.png"
-          alt="pickleball"
-          style={{ marginRight: 8 }}
-        />
-        Pickleball
-      </span>
-    ),
-    value: "pickleball",
-  },
-  {
-    label: (
-      <span>
-        <img
-          src="https://img.icons8.com/emoji/30/person-swimming.png"
-          alt="swimming"
-          style={{ marginRight: 8 }}
-        />
-        Bơi
-      </span>
-    ),
-    value: "swimming",
-  },
-  {
-    label: (
-      <span>
-        <img
-          src="https://img.icons8.com/color/30/running--v2.png"
-          alt="running"
-          style={{ marginRight: 8 }}
-        />
-        Chạy bộ
-      </span>
-    ),
-    value: "running",
-  },
-  {
-    label: (
-      <span>
-        <img
-          src="https://img.icons8.com/color/30/cycling-skin-type-2.png"
-          alt="cycling"
-          style={{ marginRight: 8 }}
-        />
-        Đạp xe
-      </span>
-    ),
-    value: "cycling",
-  },
-  {
-    label: (
-      <span>
-        <img
-          src="https://img.icons8.com/color/34/boxing.png"
-          alt="boxing"
-          style={{ marginRight: 8 }}
-        />
-        Boxing
-      </span>
-    ),
-    value: "boxing",
-  },
-];
+
+
+
 
 const ChooseSport = ({ initialData, onSubmit }) => {
+  const [sportsOptions, setSportsOptions] = useState([]);
   const { control, handleSubmit } = useForm({
     defaultValues: {
       sports: initialData || [],
     },
   });
+
+
+  useEffect(() => {
+    const fetchSports = async () => {
+      const response = await getAllSport(); // Gọi API
+      if (response) {
+        setSportsOptions(response); // Gán dữ liệu API vào state
+      }
+    };
+
+    fetchSports();
+  }, []);
+
+
 
   return (
     <form
@@ -185,8 +46,21 @@ const ChooseSport = ({ initialData, onSubmit }) => {
             <Checkbox.Group {...field}>
               <div className={cx("sports-grid")}>
                 {sportsOptions.map((option) => (
-                  <div className={cx("sport-item")} key={option.value}>
-                    <Checkbox value={option.value}>{option.label}</Checkbox>
+                  <div className={cx("sport-item")} key={option.id}>
+                    <Checkbox value={option.id}>
+                    <img
+                    src={`${process.env.REACT_APP_PATH_IMAGE}sports/${option?.image}`}
+                    className={cx("img-profile")}
+                    style={{
+                      width: "80px",
+                      height: "80px",
+                      borderRadius: "50%", 
+                      objectFit: "cover",
+                      marginRight: "16px",
+                      cursor: "pointer",
+                    }}
+                  />
+                      {option.sportName}</Checkbox>
                   </div>
                 ))}
               </div>

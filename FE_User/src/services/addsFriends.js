@@ -66,6 +66,18 @@ export const deleteInvitation = async (receiverId, token) => {
     }
   };
   
+  export const rejectFriends = async (requestId) => {
+    try {
+      const res = await request.post(`connections/reject/${requestId}`, null, {
+        headers: { "Content-Type": "application/json" },
+      });
+      return res.data;
+    } catch (error) {
+      console.error("Failed:", error);
+      throw error;
+    }
+  };
+  
 
   export const getAllFriends = async (token) => {
     try {
