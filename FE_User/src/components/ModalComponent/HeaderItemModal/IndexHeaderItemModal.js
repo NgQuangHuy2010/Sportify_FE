@@ -22,6 +22,12 @@ const HeaderItems = ({ activeForm, setActiveForm }) => {
         setActiveForm={setActiveForm}
         activeFormValue="formConnect"
       />
+      <HeaderItem
+        label="Thông tin đặt sân"
+        activeForm={activeForm}
+        setActiveForm={setActiveForm}
+        activeFormValue="formBooking"
+      />
     </div>
   );
 };

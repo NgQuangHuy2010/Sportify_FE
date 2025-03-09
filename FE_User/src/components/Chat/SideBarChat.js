@@ -77,7 +77,13 @@ export default function SideBarChat({ onSelectRoom }) {
             name={room.otherUserName}
             lastSenderName={room.lastMessage ? room.otherUserName : ""}
             info={room.lastMessage || "Chưa có tin nhắn"}
-            onClick={() => onSelectRoom(room.roomId)}
+            onClick={() =>
+              onSelectRoom(
+                room.roomId,
+                room.otherUserName,
+                room.otherUserAvatar
+              )
+            }
           >
             <Avatar
               size="50px"

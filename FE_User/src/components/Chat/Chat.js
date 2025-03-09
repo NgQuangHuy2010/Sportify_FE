@@ -20,6 +20,8 @@ import { infoUser } from "~/services/infoUser";
 
 export default function Main() {
   const [selectedRoomId, setSelectedRoomId] = useState(null);
+  const [otherUserName, setOtherUserName] = useState(null);
+  const [otherUserAvatar, setOtherUserAvatar] = useState(null);
   const [messages, setMessages] = useState([]);
   const [messageInputValue, setMessageInputValue] = useState("");
   const inputRef = useRef(null);
@@ -37,13 +39,15 @@ export default function Main() {
   }, [token]);
 
   // 🏷️ Khi chọn phòng chat
-  const handleSelectRoom = async (roomId) => {
+  const handleSelectRoom = async (roomId, name, avatar) => {
     if (selectedRoomId) {
       chatService.unsubscribeFromRoomMessages(selectedRoomId);
       console.log("UNSUB ROOM ", selectedRoomId);
     }
 
     setSelectedRoomId(roomId);
+    setOtherUserName(name);
+    setOtherUserAvatar(avatar);
     setMessages([]); // Xóa tin nhắn cũ
 
     try {
@@ -103,8 +107,11 @@ export default function Main() {
           <ChatContainer>
             <ConversationHeader>
               <ConversationHeader.Back />
-              <Avatar src={ramImage} name="Zoe" />
-              <ConversationHeader.Content userName="Huy" />
+              <Avatar
+                src={`${process.env.REACT_APP_PATH_IMAGE}avatar/${otherUserAvatar}`}
+                name={otherUserName}
+              />
+              <ConversationHeader.Content userName={otherUserName} />
               <ConversationHeader.Actions>
                 <button className="btn fs-3 border-0">
                   <i className="fa-solid fa-ellipsis-vertical"></i>

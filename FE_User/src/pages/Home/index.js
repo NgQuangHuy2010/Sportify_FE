@@ -119,10 +119,10 @@ function Home() {
         <div className="">
           <BookVenuesCarousel />
         </div>
-        <div className="p-5">
+        {/* <div className="p-5">
           <FilterUser />
-        </div>
-        <Row gutter={[16, 16]}>
+        </div> */}
+        <Row gutter={[16, 16]} className="mt-4">
           {users.map((item) => (
             <Col key={item.userId} xs={24} sm={12} md={8} lg={6}>
               <Card

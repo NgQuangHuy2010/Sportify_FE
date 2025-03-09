@@ -26,12 +26,12 @@ const _nav = [
     to: '/sports',
     icon: <CIcon icon={cilBaseball} customClassName="nav-icon" />,
   },
-  {
-    component: CNavItem,
-    name: 'SportCenter Management',
-    to: '/sports-centers',
-    icon: <CIcon icon={cilGroup} customClassName="nav-icon" />,
-  },
+  // {
+  //   component: CNavItem,
+  //   name: 'SportCenter Management',
+  //   to: '/sports-centers',
+  //   icon: <CIcon icon={cilGroup} customClassName="nav-icon" />,
+  // },
   // {
   //   component: CNavItem,
   //   name: 'Feedback Management',

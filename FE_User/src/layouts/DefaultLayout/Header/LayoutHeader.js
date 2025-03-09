@@ -21,6 +21,7 @@ import { updateProfile } from "~/services/updateProfile";
 import { message, Modal, Badge } from "antd";
 import { acceptFriends, getPendingFriends, rejectFriends } from "~/services/addsFriends";
 import dayjs from "dayjs";
+import FormBooking from "~/components/FormProfile/formBooking";
 const cx = classNames.bind(styles);
 
 const MENU_ITEM = [
@@ -255,6 +256,13 @@ function Header() {
           )}
           {activeForm === "formConnect" && (
             <FormConnectInformation
+              control={control}
+              userInfo={userInfo}
+              setValue={setValue}
+            />
+          )}
+          {activeForm === "formBooking" && (
+            <FormBooking
               control={control}
               userInfo={userInfo}
               setValue={setValue}

@@ -69,7 +69,9 @@ export const getBookedSlots = async (sportFieldId, bookingDate) => {
 
 // hủy đặt
 export const cancelBookingAPI = async (timeSlotId,userId) => {
+  console.log(userId);
   try {
+    
     const res = await request.deleteById(`/bookings/${timeSlotId}/cancel?userId=${userId}`);
     return res;
   } catch (error) {
